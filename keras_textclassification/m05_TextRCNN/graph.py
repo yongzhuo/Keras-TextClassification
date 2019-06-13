@@ -15,7 +15,7 @@ from keras.models import Model
 from keras import backend as K
 from keras import regularizers
 
-from keras_textclassification.base import graph
+from keras_textclassification.base.graph import graph
 
 
 
