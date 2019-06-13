@@ -11,7 +11,7 @@ from keras.layers import Dropout, Flatten
 from keras.layers import LSTM, GRU, Bidirectional, CuDNNLSTM, CuDNNGRU
 from keras.models import Model
 
-from keras_textclassification.base import graph
+from keras_textclassification.base.graph import graph
 
 
 class TextRNNGraph(graph):
