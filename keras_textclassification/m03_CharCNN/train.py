@@ -15,7 +15,7 @@ from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, 
 from keras_textclassification.conf.path_config import path_model_fast_text_baiduqa_2019
 from keras_textclassification.conf.path_config import path_embedding_random_char
 from keras_textclassification.etl.text_preprocess import PreprocessText
-from keras_textclassification.m03_CharCNN import CharCNNGraph
+from keras_textclassification.m03_CharCNN.graph_yoon_kim import CharCNNGraph as Graph
 
 import random
 
@@ -54,7 +54,7 @@ if __name__=="__main__":
                                       'len_max_word': 26
                                       },
                          }
-    graph = CharCNNGraph(hyper_parameters)
+    graph = Graph(hyper_parameters)
     ra_ed = graph.word_embedding
     pt = PreprocessText()
     x_train, y_train = pt.preprocess_baidu_qa_2019_idx(path_baidu_qa_2019_train, ra_ed)
