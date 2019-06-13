@@ -21,7 +21,7 @@ from keras.layers import Dropout, Reshape, Concatenate, BatchNormalization
 from keras.layers import TimeDistributed, Flatten
 from keras.models import Model
 
-from keras_textclassification.base import graph
+from keras_textclassification.base.graph import graph
 
 
 class CharCNNGraph(graph):
