@@ -2,11 +2,13 @@
 
 
 # keras_textclassification（代码主体,未完待续...）
+    - Bert
     - FastText
     - TextCNN
     - charCNN
     - TextRNN
     - TextRCNN
+    - TextDCNN
 
 
 # run(运行, 以FastText为例)
