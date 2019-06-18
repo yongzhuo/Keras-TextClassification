@@ -36,7 +36,7 @@ class TextCNNGraph(graph):
         # 提取n-gram特征和最大池化， 一般不用平均池化
         conv_pools = []
         for filter in self.filters:
-            conv = Conv2D(filters = self.kernel_size,
+            conv = Conv2D(filters = self.filters_num,
                           kernel_size = (filter, self.embed_size),
                           padding = 'valid',
                           kernel_initializer = 'normal',
