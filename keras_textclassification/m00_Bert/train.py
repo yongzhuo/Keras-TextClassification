@@ -3,13 +3,12 @@
 # @time     :2019/6/8 14:37
 # @author   :Mo
 # @function :train of RCNNGraph_kim with baidu-qa-2019 in question title
-import os
 import pathlib
 import sys
+import os
 
-project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent)
+project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 sys.path.append(project_path)
-print(project_path)
 
 from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid
 from keras_textclassification.conf.path_config import path_model_fast_text_baiduqa_2019
@@ -25,7 +24,7 @@ if __name__=="__main__":
                                      'batch_size': 64,
                                      'embed_size': 30,
                                      'filters': [2, 3, 4],
-                                     'kernel_size': 30,
+                                     'filters_num': 30,
                                      'channel_size': 1,
                                      'dropout': 0.5,
                                      'decay_step': 100,
