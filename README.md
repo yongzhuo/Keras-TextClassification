@@ -9,6 +9,7 @@
     - TextRNN
     - TextRCNN
     - TextDCNN
+    - TextDPCNN
 
 
 # run(运行, 以FastText为例)
@@ -36,7 +37,7 @@
 
 # 模型与论文paper题与地址
 * FastText:   [Bag of Tricks for Efﬁcient Text Classiﬁcation](https://arxiv.org/abs/1607.01759)
-* TextCNN：   [ConvolutionalNeuralNetworksforSentenceClassiﬁcation](https://arxiv.org/abs/1408.5882)
+* TextCNN：   [Convolutional Neural Networks for Sentence Classiﬁcation](https://arxiv.org/abs/1408.5882)
 * charCNN：   [Character-Aware Neural Language Models](https://arxiv.org/abs/1508.06615)
 * TextRNN：   [Recurrent Neural Network for Text Classification with Multi-Task Learning](https://www.ijcai.org/Proceedings/16/Papers/408.pdf)
 * RCNN：      [Recurrent Convolutional Neural Networks for Text Classification](http://www.nlpr.ia.ac.cn/cip/~liukang/liukangPageFile/Recurrent%20Convolutional%20Neural%20Networks%20for%20Text%20Classification.pdf)
