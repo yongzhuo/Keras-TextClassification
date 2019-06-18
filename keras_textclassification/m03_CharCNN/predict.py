@@ -4,6 +4,13 @@
 # @author   :Mo
 # @function :
 
+import pathlib
+import sys
+import os
+
+project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
+sys.path.append(project_path)
+
 import numpy as np
 
 from keras_textclassification.conf.path_config import path_embedding_random_char
@@ -16,7 +23,7 @@ if __name__=="__main__":
                                      'batch_size': 64,
                                      'embed_size': 30,
                                      'filters': [2, 3, 4], # 这里无用
-                                     'kernel_size': 30,
+                                     'filters_num': 30,
                                      'channel_size': 1,
                                      'dropout': 0.5,
                                      'decay_step': 100,
