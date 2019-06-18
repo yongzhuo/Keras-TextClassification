@@ -7,9 +7,8 @@ import os
 import pathlib
 import sys
 
-project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent)
+project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 sys.path.append(project_path)
-print(project_path)
 
 from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid
 from keras_textclassification.conf.path_config import path_model_fast_text_baiduqa_2019
@@ -24,7 +23,7 @@ if __name__=="__main__":
                                      'batch_size': 64,
                                      'embed_size': 30,
                                      'filters': [2, 3, 4], # 这里无用
-                                     'kernel_size': 30,
+                                     'filters_num': 30,
                                      'channel_size': 1,
                                      'dropout': 0.5,
                                      'decay_step': 100,
