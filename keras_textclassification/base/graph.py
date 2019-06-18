@@ -29,7 +29,7 @@ class graph:
         self.batch_size = hyper_parameters_model.get('batch_size', 32)  # 批向量
         self.embed_size = hyper_parameters_model.get('embed_size', 300)  # 嵌入层尺寸
         self.filters = hyper_parameters_model.get('filters', [3, 4, 5])  # 卷积核大小
-        self.kernel_size = hyper_parameters_model.get('kernel_size', 300)  # 核长
+        self.filters_num = hyper_parameters_model.get('filters_num', 300)  # 核长
         self.channel_size = hyper_parameters_model.get('channel_size', 1)  # 通道数
         self.dropout = hyper_parameters_model.get('dropout', 0.5)          # dropout层系数，舍弃
         self.decay_step = hyper_parameters_model.get('decay_step', 100)    # 衰减步数
