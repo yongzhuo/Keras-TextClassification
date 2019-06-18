@@ -3,7 +3,12 @@
 # @time     :2019/6/3 10:51
 # @author   :Mo
 # @function :train of fast text with baidu-qa-2019 in question title
+import pathlib
+import sys
+import os
 
+project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
+sys.path.append(project_path)
 
 import numpy as np
 
@@ -17,7 +22,7 @@ if __name__=="__main__":
                                      'batch_size': 256,
                                      'embed_size': 300,
                                      'filters': [3, 4, 5],
-                                     'kernel_size': 3,
+                                     'filters_num': 3,
                                      'channel_size': 1,
                                      'dropout': 0.5,
                                      'decay_step': 100,
