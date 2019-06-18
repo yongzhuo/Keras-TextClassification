@@ -4,6 +4,12 @@
 # @author   :Mo
 # @function :
 
+import pathlib
+import sys
+import os
+
+project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
+sys.path.append(project_path)
 
 from keras_textclassification.conf.path_config import path_model_fast_text_baiduqa_2019
 from keras_textclassification.conf.path_config import path_embedding_bert
@@ -19,7 +25,7 @@ def pred_tet():
                                   'batch_size': 64,
                                   'embed_size': 30,
                                   'filters': [2, 3, 4],
-                                  'kernel_size': 30,
+                                  'filters_num': 30,
                                   'channel_size': 1,
                                   'dropout': 0.5,
                                   'decay_step': 100,
@@ -79,7 +85,7 @@ def pred_input():
                                   'batch_size': 64,
                                   'embed_size': 30,
                                   'filters': [2, 3, 4],
-                                  'kernel_size': 30,
+                                  'filters_num': 30,
                                   'channel_size': 1,
                                   'dropout': 0.5,
                                   'decay_step': 100,
