@@ -4,6 +4,13 @@
 # @author   :Mo
 # @function :train of fast text with baidu-qa-2019 in question title
 
+import pathlib
+import sys
+import os
+
+project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
+sys.path.append(project_path)
+
 from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid
 from keras_textclassification.conf.path_config import path_embedding_random_char
 from keras_textclassification.conf.path_config import path_model_fast_text_baiduqa_2019
@@ -15,7 +22,7 @@ if __name__=="__main__":
                                      'batch_size': 256,
                                      'embed_size': 300,
                                      'filters': [2, 3, 4],
-                                     'kernel_size': 3,
+                                     'filters_num': 3,
                                      'channel_size': 1,
                                      'dropout': 0.5,
                                      'decay_step': 100,
