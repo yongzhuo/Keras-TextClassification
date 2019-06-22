@@ -10,6 +10,7 @@
     - TextRCNN
     - TextDCNN
     - TextDPCNN
+    - TextVDCNN
 
 
 # run(运行, 以FastText为例)
@@ -43,6 +44,7 @@
 * RCNN：      [Recurrent Convolutional Neural Networks for Text Classification](http://www.nlpr.ia.ac.cn/cip/~liukang/liukangPageFile/Recurrent%20Convolutional%20Neural%20Networks%20for%20Text%20Classification.pdf)
 * DCNN:       [A Convolutional Neural Network for Modelling Sentences](https://arxiv.org/abs/1404.2188)
 * DPCNN:      [Deep Pyramid Convolutional Neural Networks for Text Categorization](https://www.aclweb.org/anthology/P17-1052)
+* VDCNN:      [Very Deep Convolutional Networks](https://www.aclweb.org/anthology/E17-1104)
 
 
 # 参考/感谢
@@ -51,3 +53,4 @@
 * Kashgari项目: [https://github.com/BrikerMan/Kashgari](https://github.com/BrikerMan/Kashgari)
 * 文本分类Ipty : [https://github.com/lpty/classifier](https://github.com/lpty/classifier)
 * keras文本分类: [https://github.com/ShawnyXiao/TextClassification-Keras](https://github.com/ShawnyXiao/TextClassification-Keras)
+* keras文本分类: [https://github.com/AlexYangLi/TextClassification](https://github.com/AlexYangLi/TextClassification)
