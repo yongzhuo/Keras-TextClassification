@@ -22,6 +22,13 @@
     - 3. 预测: 运行 predict.py, 例如: python predict.py
     - 说明: 默认不带pre train的random embedding，训练和验证语料只有100条，完整语料移步下面data查看下载
 
+# run(test/sample实例)
+    - bert,word2vec,random样例在test/目录下, 注意word2vec(char or word), random-word,  bert(chinese_L-12_H-768_A-12)未全部加载,需要下载
+    - tet_char_bert_embedding.py
+    - tet_char_random_embedding.py
+    - tet_char_word2vec_embedding.py
+    - tet_word_random_embedding.py
+    - tet_word_word2vec_embedding.py
 
 # keras_textclassification/data
     - 数据下载
@@ -30,7 +37,11 @@
        - baike_qa_train.csv
        - baike_qa_valid.csv
     - embeddings
-       - chinese_L-12_H-768_A-12(取谷歌预训练好点的模型，已经压缩上传)
+       - chinese_L-12_H-768_A-12/(取谷歌预训练好点的模型，已经压缩上传)
+       - term_char.txt(已经上传, 项目中已全, wiki字典, 还可以用新华字典什么的)
+       - term_word.txt(未上传, 项目中只有部分, 可参考词向量的)
+       - w2v_model_merge_short.vec(未上传, 项目中只有部分, 词向量, 可以用自己的)
+       - w2v_model_wiki_char.vec(已上传百度网盘, 项目中只有部分, 自己训练的维基百科字向量, 可以用自己的)
     - model
        - 预训练模型存放地址
 
