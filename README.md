@@ -12,6 +12,8 @@
     - TextDPCNN
     - TextVDCNN
     - TextCRNN
+    - DeepMoji
+    - SelfAttention
 
 
 # run(运行, 以FastText为例)
@@ -46,7 +48,9 @@
 * DCNN:       [A Convolutional Neural Network for Modelling Sentences](https://arxiv.org/abs/1404.2188)
 * DPCNN:      [Deep Pyramid Convolutional Neural Networks for Text Categorization](https://www.aclweb.org/anthology/P17-1052)
 * VDCNN:      [Very Deep Convolutional Networks](https://www.aclweb.org/anthology/E17-1104)
-* CRNN        [A C-LSTM Neural Network for Text Classification](https://arxiv.org/abs/1511.08630)
+* CRNN:        [A C-LSTM Neural Network for Text Classification](https://arxiv.org/abs/1511.08630)
+* DeepMoji:    [Using millions of emojio ccurrences to learn any-domain represent ations for detecting sentiment, emotion and sarcasm](https://arxiv.org/abs/1708.00524)
+* SelfAttention: [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 
 
 # 参考/感谢
