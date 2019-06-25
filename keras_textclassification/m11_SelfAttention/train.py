@@ -40,6 +40,7 @@ if __name__=="__main__":
                                       'corpus_path': path_embedding_random_char,
                                       'level_type': 'char',
                                       'embed_size': 30,
+                                      'len_max': 50,
                                       },
                          }
     import time
