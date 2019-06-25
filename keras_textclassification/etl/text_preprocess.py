@@ -60,7 +60,6 @@ def preprocess_baidu_qa_2019(path):
     return x_y
 
 
-
 def save_json(json_, path):
     """
       保存json，
@@ -85,7 +84,7 @@ def get_json(path):
 
 class PreprocessText:
     def __init__(self):
-        gg = 0
+        pass
 
     @staticmethod
     def prereocess_idx(pred):
@@ -100,7 +99,18 @@ class PreprocessText:
         else:
             raise RuntimeError("path_fast_text_model_label2index is None")
 
-    def preprocess_baidu_qa_2019_idx(self, path, embed):
+    @staticmethod
+    def prereocess_pred_id(pred):
+        if os.path.exists(path_fast_text_model_label2index):
+            pred_i2l = {}
+            for i in range(len(pred)):
+                pred_i2l[i] = pred[i]
+            pred_i2l_rank = [sorted(pred_i2l.items(), key=lambda k: k[1], reverse=True)]
+            return pred_i2l_rank
+        else:
+            raise RuntimeError("path_fast_text_model_label2index is None")
+
+    def preprocess_baidu_qa_2019_idx(self, path, embed, rate=1):
         data = pd.read_csv(path)
         ques = data['ques'].tolist()
         label = data['label'].tolist()
@@ -119,17 +129,52 @@ class PreprocessText:
         l2i_i2l['i2l'] = index2label
         save_json(l2i_i2l, path_fast_text_model_label2index)
 
+        len_ql = int(rate * len(ques))
         x = []
-        for que in ques:
+        for que in ques[0:len_ql]:
             que_embed = embed.sentence2idx(que)
-            x.append(que_embed)
+            x.append(que_embed) # [[], ]
         label_zo = []
-        for label_one in label:
+        for label_one in label[0:len_ql]:
             label_zeros = [0] * len(l2i_i2l['l2i'])
             label_zeros[l2i_i2l['l2i'][label_one]] = 1
             label_zo.append(label_zeros)
 
         return np.array(x), np.array(label_zo)
+
+    def preprocess_baidu_qa_2019_idx_bert(self, path, embed, rate=1):
+        data = pd.read_csv(path)
+        ques = data['ques'].tolist()
+        label = data['label'].tolist()
+        ques = [str(q).upper() for q in ques]
+        label = [str(l).upper() for l in label]
+        label_set = set(label)
+        count = 0
+        label2index = {}
+        index2label = {}
+        for label_one in label_set:
+            label2index[label_one] = count
+            index2label[count] = label_one
+            count = count + 1
+        l2i_i2l = {}
+        l2i_i2l['l2i'] = label2index
+        l2i_i2l['i2l'] = index2label
+        save_json(l2i_i2l, path_fast_text_model_label2index)
+
+        len_ql = int(rate * len(ques))
+        x1 = []
+        x2 = []
+        for que in ques[0:len_ql]:
+            que_embed = embed.sentence2idx(que)
+            x1.append(que_embed[0])
+            x2.append(que_embed[1])
+        label_zo = []
+        for label_one in label[0:len_ql]:
+            label_zeros = [0] * len(l2i_i2l['l2i'])
+            label_zeros[l2i_i2l['l2i'][label_one]] = 1
+            label_zo.append(label_zeros)
+
+        return [np.array(x1),np.array(x2)], np.array(label_zo)
 
 
 if __name__=="__main__":

@@ -14,8 +14,11 @@ from gensim.models import KeyedVectors
 from keras.engine import Layer
 from keras.layers import Concatenate
 from keras.layers import Embedding
+from keras.layers import Add
 from keras.models import Input
 from keras.models import Model
+
+import numpy as np
 
 
 class NonMaskingLayer(Layer):
@@ -95,7 +98,7 @@ class RandomEmbedding(BaseEmbedding):
     def deal_corpus(self):
         token2idx = self.ot_dict.copy()
         count = 3
-        if 'term_char' in self.corpus_path:
+        if 'term' in self.corpus_path:
             with open(file=self.corpus_path, mode='r', encoding='utf-8') as fd:
                 while True:
                     term_one = fd.readline()
@@ -151,56 +154,88 @@ class WordEmbedding(BaseEmbedding):
 
         self.token2idx = self.ot_dict.copy()
         embedding_matrix = []
+        # 首先加self.token2idx中的四个[PAD]、[UNK]、[BOS]、[EOS]
+        embedding_matrix.append(np.zeros(self.embed_size))
+        embedding_matrix.append(np.random.uniform(-0.5, 0.5, self.embed_size))
+        embedding_matrix.append(np.random.uniform(-0.5, 0.5, self.embed_size))
+        embedding_matrix.append(np.random.uniform(-0.5, 0.5, self.embed_size))
+
         for word in self.key_vector.index2entity:
             self.token2idx[word] = len(self.token2idx)
             embedding_matrix.append(self.key_vector[word])
-        self.token2idx = self.token2idx
+
+        # self.token2idx = self.token2idx
         self.idx2token = {}
         for key, value in self.token2idx.items():
             self.idx2token[value] = key
 
         len_token2idx = len(self.token2idx)
+        embedding_matrix = np.array(embedding_matrix)
+        self.input = Input(shape=(self.len_max,), dtype='int32')
 
-        input_layer = Input(shape=(self.len_max,), dtype='int32')
-
-        output = Embedding(len_token2idx,
+        self.output = Embedding(len_token2idx,
                             self.embed_size,
                             input_length=self.len_max,
                             weights=[embedding_matrix],
-                            trainable=False)(input_layer)
-        self.model = Model(input_layer, output)
+                            trainable=False)(self.input)
+        self.model = Model(self.input, self.output)
 
 
 class BertEmbedding(BaseEmbedding):
     def __init__(self, hyper_parameters):
+        self.layer_indexes = hyper_parameters['embedding'].get('layer_indexes', [12])
         super().__init__(hyper_parameters)
-        # self.path = hyper_parameters.get('corpus_path', path_embedding_bert)
 
     def build(self):
         self.embedding_type = 'bert'
         config_path = os.path.join(self.corpus_path, 'bert_config.json')
         check_point_path = os.path.join(self.corpus_path, 'bert_model.ckpt')
         dict_path = os.path.join(self.corpus_path, 'vocab.txt')
+        print('load bert model start!')
         model = keras_bert.load_trained_model_from_checkpoint(config_path,
                                                               check_point_path,
                                                               seq_len=self.len_max)
-        num_layers = len(model.layers)
-        features_layers = [model.get_layer(index=num_layers-1+idx*8).output\
-                            for idx in range(-3, 1)]
-        embedding_layer = Concatenate(features_layers)
-        output_layer = NonMaskingLayer()(embedding_layer)
-        self.model = Model(model.inputs, output_layer)
+        print('load bert model end!')
+        # bert model all layers
+        layer_dict = [7]
+        layer_0 = 7
+        for i in range(11):
+            layer_0 = layer_0 + 8
+            layer_dict.append(layer_0)
+        # 输出它本身
+        if len(self.layer_indexes) == 0:
+            encoder_layer = model.output
+        # 分类如果只有一层，就只取最后那一层的weight；取得不正确，就默认取最后一层
+        elif len(self.layer_indexes) == 1:
+            if self.layer_indexes[0] in [i + 1 for i in range(12)]:
+                encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0] - 1]).output
+            else:
+                encoder_layer = model.get_layer(index=layer_dict[-1]).output
+        # 否则遍历需要取的层，把所有层的weight取出来并拼接起来shape:768*层数
+        else:
+            # layer_indexes must be [1,2,3,......12]
+            # all_layers = [model.get_layer(index=lay).output if lay is not 1 else model.get_layer(index=lay).output[0] for lay in layer_indexes]
+            all_layers = [model.get_layer(index=layer_dict[lay - 1]).output if lay in [i + 1 for i in range(12)]
+                          else model.get_layer(index=layer_dict[-1]).output  # 如果给出不正确，就默认输出最后一层
+                          for lay in self.layer_indexes]
+            all_layers_select = []
+            for all_layers_one in all_layers:
+                all_layers_select.append(all_layers_one)
+            encoder_layer = Add()(all_layers_select)
+        self.output = NonMaskingLayer()(encoder_layer)
+        self.input = model.inputs
+        self.model = Model(self.input, self.output)
 
         self.embedding_size = self.model.output_shape[-1]
-        word2idx = {}
-        with open(dict_path, 'r', encoding='utf-8') as f:
-            words = f.read().splitlines()
-        for idx, word in enumerate(words):
-            word2idx[word] = idx
-        for key, value in self.ot_dict.items():
-            word2idx[key] = word2idx[value]
-
-        self.token2idx = word2idx
+        # word2idx = {}
+        # with open(dict_path, 'r', encoding='utf-8') as f:
+        #     words = f.read().splitlines()
+        # for idx, word in enumerate(words):
+        #     word2idx[word] = idx
+        # for key, value in self.ot_dict.items():
+        #     word2idx[key] = value
+        #
+        # self.token2idx = word2idx
 
         # reader tokenizer
         self.token_dict = {}
@@ -213,5 +248,6 @@ class BertEmbedding(BaseEmbedding):
 
     def sentence2idx(self, text):
         input_id, input_type_id = self.tokenizer.encode(first=text, max_len=self.len_max)
-        input_mask = [0 if ids == 0 else 1 for ids in input_id]
-        return input_id, input_type_id, input_mask
+        # input_mask = [0 if ids == 0 else 1 for ids in input_id]
+        # return input_id, input_type_id, input_mask
+        return [input_id, input_type_id]
