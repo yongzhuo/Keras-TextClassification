@@ -44,8 +44,8 @@ if __name__=="__main__":
     ra_ed = graph.word_embedding
     pt = PreprocessText()
     # rate=0 - 1
-    x_train, y_train = pt.preprocess_baidu_qa_2019_idx(path_baidu_qa_2019_train, ra_ed, rate=0.01)
-    x_val, y_val = pt.preprocess_baidu_qa_2019_idx(path_baidu_qa_2019_valid, ra_ed, rate=0.01)
+    x_train, y_train = pt.preprocess_baidu_qa_2019_idx(path_baidu_qa_2019_train, ra_ed, rate=1)
+    x_val, y_val = pt.preprocess_baidu_qa_2019_idx(path_baidu_qa_2019_valid, ra_ed, rate=1)
     print(len(y_train))
     graph.fit(x_train, y_train, x_val, y_val)
     print("耗时:" + str(time.time()-time_start))
