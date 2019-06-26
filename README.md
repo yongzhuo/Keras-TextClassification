@@ -14,6 +14,7 @@
     - TextCRNN
     - DeepMoji
     - SelfAttention
+    - HAN
 
 
 # run(运行, 以FastText为例)
@@ -62,6 +63,7 @@
 * CRNN:        [A C-LSTM Neural Network for Text Classification](https://arxiv.org/abs/1511.08630)
 * DeepMoji:    [Using millions of emojio ccurrences to learn any-domain represent ations for detecting sentiment, emotion and sarcasm](https://arxiv.org/abs/1708.00524)
 * SelfAttention: [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+* HAN: [Hierarchical Attention Networks for Document Classification](https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
 
 
 # 参考/感谢
