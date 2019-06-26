@@ -7,11 +7,12 @@
 
 from keras.layers import SpatialDropout1D, Activation, concatenate
 from keras.layers import Dropout, Dense, Flatten
-from keras.layers import LSTM, Bidirectional
+from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional
 from keras.engine import InputSpec, Layer
 from keras.models import Model
 from keras import backend as K
 from keras import initializers
+from keras import regularizers
 
 from keras_textclassification.base.graph import graph
 
@@ -46,10 +47,32 @@ class DeepMoji(graph):
         # many of the datasets contain so few words that losing one or more words can alter the emotions completely
         x = SpatialDropout1D(self.dropout_spatial)(x)
 
+        if self.rnn_units=="LSTM":
+                layer_cell = LSTM
+        elif self.rnn_units=="GRU":
+                layer_cell = GRU
+        elif self.rnn_units=="CuDNNLSTM":
+                layer_cell = CuDNNLSTM
+        elif self.rnn_units=="CuDNNGRU":
+                layer_cell = CuDNNGRU
+        else:
+            layer_cell = GRU
+
+
         # skip-connection from embedding to output eases gradient-flow and allows access to lower-level features
         # ordering of the way the merge is done is important for consistency with the pretrained model
-        lstm_0_output = Bidirectional(LSTM(self.rnn_units, return_sequences=True), name="bi_lstm_0")(x)
-        lstm_1_output = Bidirectional(LSTM(self.rnn_units, return_sequences=True), name="bi_lstm_1")(lstm_0_output)
+        lstm_0_output = Bidirectional(layer_cell(units=self.rnn_units,
+                                                 return_sequences=True,
+                                                 activation='relu',
+                                                 kernel_regularizer=regularizers.l2(self.l2),
+                                                 recurrent_regularizer=regularizers.l2(self.l2)
+                                                 ), name="bi_lstm_0")(x)
+        lstm_1_output = Bidirectional(layer_cell(units=self.rnn_units,
+                                                 return_sequences=True,
+                                                 activation='relu',
+                                                 kernel_regularizer=regularizers.l2(self.l2),
+                                                 recurrent_regularizer=regularizers.l2(self.l2)
+                                                 ), name="bi_lstm_1")(lstm_0_output)
         x = concatenate([lstm_1_output, lstm_0_output, x])
 
         # if return_attention is True in AttentionWeightedAverage, an additional tensor
