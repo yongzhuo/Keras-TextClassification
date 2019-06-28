@@ -78,7 +78,7 @@ class BertGraph(graph):
         # 最后就是softmax
         dense_layer = Dense(self.label, activation=self.activate_classify)(x)
         output_layers = [dense_layer]
-        self.model = Model(self.word_embedding.inputs, output_layers)
+        self.model = Model(self.word_embedding.input, output_layers)
         self.model.summary(120)
 
     def predict(self, sen):
