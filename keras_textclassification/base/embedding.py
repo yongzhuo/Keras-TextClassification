@@ -2,56 +2,56 @@
 # !/usr/bin/python
 # @time     :2019/6/3 11:29
 # @author   :Mo
-# @function :embeddings of model, base embedding of random word2vec or bert
+# @function :embeddings of model, base embedding of random, word2vec or bert
 
 
-import codecs
-import os
+from keras_textclassification.conf.path_config import path_embedding_vector_word2vec_char, path_embedding_vector_word2vec_word
+from keras_textclassification.conf.path_config import path_embedding_random_char, path_embedding_random_word
+from keras_textclassification.conf.path_config import path_embedding_bert
 
-import jieba
-import keras_bert
+from keras_textclassification.keras_layers.non_mask_layer import NonMaskingLayer
 from gensim.models import KeyedVectors
-from keras.engine import Layer
-from keras.layers import Concatenate
-from keras.layers import Embedding
-from keras.layers import Add
-from keras.models import Input
-from keras.models import Model
+from keras.layers import Add, Embedding
+from keras.models import Input, Model
 
 import numpy as np
-
-
-class NonMaskingLayer(Layer):
-    """
-    fix convolutional 1D can't receive masked input, detail: https://github.com/keras-team/keras/issues/4978
-    thanks for https://github.com/jacoxu
-    """
-
-    def __init__(self, **kwargs):
-        self.supports_masking = True
-        super(NonMaskingLayer, self).__init__(**kwargs)
-
-    def build(self, input_shape):
-        pass
-
-    def compute_mask(self, input, input_mask=None):
-        # do not pass the mask to the next layers
-        return None
-
-    def call(self, x, mask=None):
-        return x
-
-    def compute_output_shape(self, input_shape):
-        return input_shape
+import keras_bert
+import jieba
+import codecs
+import os
 
 
 class BaseEmbedding:
     def __init__(self, hyper_parameters):
-        self.corpus_path = hyper_parameters['embedding'].get('corpus_path', 'corpus_path') # 'dict' or 'corpus'
-        self.level_type = hyper_parameters['embedding'].get('level_type', 'char') # 还可以填'word'
-        self.vocab_size = hyper_parameters['embedding'].get('vocab_size', 30000) #
-        self.embed_size = hyper_parameters['embedding'].get('embed_size', 300) # word 150万所以300；中文char 2000所以30左右
-        self.len_max = hyper_parameters['embedding'].get('len_max', 50) # 建议25-50
+        self.len_max = hyper_parameters.get('len_max', 50)  # 文本最大长度, 建议25-50
+        self.embed_size = hyper_parameters.get('embed_size', 300)  # 嵌入层尺寸
+        self.vocab_size = hyper_parameters.get('vocab_size', 30000) # 字典大小, 这里随便填的，会根据代码里修改
+        self.trainable = hyper_parameters.get('trainable', False)  # 是否微调, 例如静态词向量、动态词向量、微调bert层等, random也可以
+        self.level_type = hyper_parameters.get('level_type', 'char')  # 还可以填'word'
+        self.embedding_type = hyper_parameters.get('embedding_type', 'word2vec')  # 词嵌入方式，可以选择'bert'、'random'、'word2vec'
+
+        # 自适应, 根据level_type和embedding_type判断corpus_path
+        if self.level_type=="word":
+            if self.embedding_type=="random":
+                self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_random_word)
+            elif self.embedding_type == "word2vec":
+                self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_vector_word2vec_word)
+            elif self.embedding_type == "bert":
+                raise RuntimeError("bert level_type is 'char', not 'word'")
+            else:
+                raise RuntimeError("embedding_type must be 'random', 'word2vec' or 'bert'")
+        elif self.level_type=="char":
+            if self.embedding_type=="random":
+                self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_random_char)
+            elif self.embedding_type == "word2vec":
+                self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_vector_word2vec_char)
+            elif self.embedding_type == "bert":
+                self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_bert)
+            else:
+                raise RuntimeError("embedding_type must be 'random', 'word2vec' or 'bert'")
+        else:
+            raise RuntimeError("level_type must be 'char' or 'word'")
+        # 定义的符号
         self.ot_dict = { 'PAD': 0,
                          'UNK': 1,
                          'BOS': 2,
@@ -59,7 +59,7 @@ class BaseEmbedding:
         self.deal_corpus()
         self.build()
 
-    def deal_corpus(self):
+    def deal_corpus(self): # 处理语料
         pass
 
     def build(self):
@@ -136,7 +136,8 @@ class RandomEmbedding(BaseEmbedding):
         self.output = Embedding(self.vocab_size,
                             self.embed_size,
                             input_length=self.len_max,
-                            trainable=True)(self.input)
+                            trainable=self.trainable,
+                            )(self.input)
         self.model = Model(self.input, self.output)
 
 
@@ -177,7 +178,7 @@ class WordEmbedding(BaseEmbedding):
                             self.embed_size,
                             input_length=self.len_max,
                             weights=[embedding_matrix],
-                            trainable=False)(self.input)
+                            trainable=self.trainable)(self.input)
         self.model = Model(self.input, self.output)
 
 
@@ -194,21 +195,23 @@ class BertEmbedding(BaseEmbedding):
         print('load bert model start!')
         model = keras_bert.load_trained_model_from_checkpoint(config_path,
                                                               check_point_path,
-                                                              seq_len=self.len_max)
+                                                              seq_len=self.len_max,
+                                                              trainable=self.trainable)
         print('load bert model end!')
         # bert model all layers
         layer_dict = [7]
         layer_0 = 7
-        for i in range(11):
+        for i in range(12):
             layer_0 = layer_0 + 8
             layer_dict.append(layer_0)
+        print(layer_dict)
         # 输出它本身
         if len(self.layer_indexes) == 0:
             encoder_layer = model.output
         # 分类如果只有一层，就只取最后那一层的weight；取得不正确，就默认取最后一层
         elif len(self.layer_indexes) == 1:
             if self.layer_indexes[0] in [i + 1 for i in range(12)]:
-                encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0] - 1]).output
+                encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0]-1]).output
             else:
                 encoder_layer = model.get_layer(index=layer_dict[-1]).output
         # 否则遍历需要取的层，把所有层的weight取出来并拼接起来shape:768*层数

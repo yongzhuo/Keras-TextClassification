@@ -7,8 +7,8 @@
 
 
 from keras_textclassification.base.graph import graph
-from keras.layers import Dense
 from keras.layers import GlobalMaxPooling1D
+from keras.layers import Dense
 from keras.models import Model
 
 

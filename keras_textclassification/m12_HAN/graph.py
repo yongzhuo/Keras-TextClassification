@@ -5,12 +5,11 @@
 # @function :Hierarchical Attention Networks for Document Classification(https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
 
 
-from keras import regularizers
-from keras.layers import Dense
-from keras.layers import Dropout, Flatten, Input
-from keras.layers import SpatialDropout1D
+from keras.layers import Dense, Dropout, SpatialDropout1D, Flatten, Input
 from keras.layers import Bidirectional, LSTM, GRU, TimeDistributed
+from keras import regularizers
 from keras.models import Model
+import keras.backend as K
 
 from keras_textclassification.keras_layers.Attention_self import AttentionSelf
 from keras_textclassification.base.graph import graph
@@ -41,6 +40,7 @@ class HANGraph(graph):
         x_word = self.word_level()(x_input_word)
         x_word_to_sen = AttentionSelf(self.attention_units)(x_word)
         x_word_to_sen = Dropout(self.dropout)(x_word_to_sen)
+
         # sentence or doc
         x_sen = self.sentence_level()(x_word_to_sen)
         x_sen = AttentionSelf(self.attention_units)(x_sen)

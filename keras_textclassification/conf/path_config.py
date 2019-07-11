@@ -22,6 +22,11 @@ path_baidu_qa_2019_train = path_root + '/data/baidu_qa_2019/baike_qa_train.csv'
 path_baidu_qa_2019_valid = path_root + '/data/baidu_qa_2019/baike_qa_valid.csv'
 
 # fast_text config
-path_fast_text_model = path_root + '/data/model/fast_text/'
-path_model_fast_text_baiduqa_2019 = path_root + '/data/model/fast_text/model_fast_text.f5'
-path_hyper_parameters_fast_text =  path_root + '/data/model/fast_text/hyper_parameters_fast_text.json'
+# 模型目录
+path_model_dir =  path_root + "/data/model/fast_text/"
+# 语料地址
+path_model = path_root + '/data/model/fast_text/model_fast_text.f5'
+# 超参数保存地址
+path_hyper_parameters =  path_root + '/data/model/fast_text/hyper_parameters.json'
+# embedding微调保存地址
+path_fineture = path_root + "/data/model/fast_text/embedding_trainable.f5"

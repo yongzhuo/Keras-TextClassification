@@ -5,10 +5,9 @@
 # @function :graph of base
 
 
-from keras import regularizers
-from keras.layers import Dense
-from keras.layers import Dropout, Flatten
 from keras.layers import LSTM, GRU, Bidirectional, CuDNNLSTM, CuDNNGRU
+from keras.layers import Dense, Dropout, Flatten
+from keras import regularizers
 from keras.models import Model
 
 from keras_textclassification.base.graph import graph
@@ -22,7 +21,7 @@ class TextRNNGraph(graph):
         """
         self.num_rnn_layers = hyper_parameters['model'].get('num_rnn_layers', 2)
         self.rnn_type = hyper_parameters['model'].get('rnn_type', 'LSTM')
-        self.rnn_units = hyper_parameters['model'].get('rnn_units', 650)  # large, small is 300
+        self.rnn_units = hyper_parameters['model'].get('rnn_units', 256)
         super().__init__(hyper_parameters)
 
     def create_model(self, hyper_parameters):

@@ -5,12 +5,8 @@
 # @function :graph of base
 
 
-from keras.layers import Concatenate
-from keras.layers import Conv2D, MaxPool2D
-from keras.layers import Dense
-from keras.layers import Dropout
-from keras.layers import Flatten
-from keras.layers import Reshape
+from keras.layers import Reshape, Concatenate, Conv2D, MaxPool2D
+from keras.layers import Dense, Dropout, Flatten
 from keras.models import Model
 
 from keras_textclassification.base.graph import graph

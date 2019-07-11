@@ -15,6 +15,7 @@
     - DeepMoji
     - SelfAttention
     - HAN
+    - CapsuleNet
 
 
 # run(运行, 以FastText为例)
@@ -25,6 +26,7 @@
 
 # run(test/sample实例)
     - bert,word2vec,random样例在test/目录下, 注意word2vec(char or word), random-word,  bert(chinese_L-12_H-768_A-12)未全部加载,需要下载
+    - predict_bert_text_cnn.py
     - tet_char_bert_embedding.py
     - tet_char_random_embedding.py
     - tet_char_word2vec_embedding.py
@@ -64,7 +66,7 @@
 * DeepMoji:    [Using millions of emojio ccurrences to learn any-domain represent ations for detecting sentiment, emotion and sarcasm](https://arxiv.org/abs/1708.00524)
 * SelfAttention: [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 * HAN: [Hierarchical Attention Networks for Document Classification](https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
-
+* CapsuleNet: [Dynamic Routing Between Capsules](https://arxiv.org/pdf/1710.09829.pdf)
 
 # 参考/感谢
 * 文本分类项目:   [https://github.com/mosu027/TextClassification](https://github.com/mosu027/TextClassification)

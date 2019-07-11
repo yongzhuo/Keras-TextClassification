@@ -4,124 +4,110 @@
 # @author   :Mo
 # @function :
 
+
+# 适配linux
 import pathlib
 import sys
 import os
-
 project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 sys.path.append(project_path)
-
-from keras_textclassification.conf.path_config import path_model_fast_text_baiduqa_2019
-from keras_textclassification.conf.path_config import path_embedding_bert
-from keras_textclassification.etl.text_preprocess import PreprocessText
+# 地址
+from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
+# 训练验证数据地址
+from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid
+# 数据预处理, 删除文件目录下文件
+from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, read_and_process, load_json
+# 模型图
 from keras_textclassification.m00_Bert.graph import BertGraph as Graph
+# 模型评估
+from sklearn.metrics import classification_report
+# 计算时间
+import time
+
 import numpy as np
 
 
-def pred_tet():
-    # 测试集的准确率
-    from keras_textclassification.conf.path_config import path_baidu_qa_2019_valid
-    hyper_parameters = {'model': {'label': 17,
-                                  'batch_size': 64,
-                                  'embed_size': 30,
-                                  'filters': [2, 3, 4],
-                                  'filters_num': 30,
-                                  'channel_size': 1,
-                                  'dropout': 0.5,
-                                  'decay_step': 100,
-                                  'decay_rate': 0.9,
-                                  'epochs': 20,
-                                  'len_max': 50,
-                                  'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
-                                  'lr': 1e-3,
-                                  'l2': 1e-6,
-                                  'activate_classify': 'softmax',
-                                  'embedding_type': 'bert',  # 还可以填'random'、 'bert' or 'word2vec"
-                                  'is_training': True,
-                                  'model_path': path_model_fast_text_baiduqa_2019,  # 地址可以自己设置
-                                  'rnn_type': 'GRU',
-                                  # type of rnn, select 'LSTM', 'GRU', 'CuDNNGRU', 'CuDNNLSTM', 'Bidirectional-LSTM', 'Bidirectional-GRU'
-                                  'rnn_units': 256,  # large 650, small is 300
-                                  },
-                        'embedding': {'embedding_type': 'bert',
-                                      'corpus_path': path_embedding_bert,
-                                      'level_type': 'char',
-                                      'embed_size': 30,
-                                      'len_max': 50,
-                                      'layer_indexes': [12]  # range 1 to 12
-                                      },
-                        }
-    pt = PreprocessText()
+def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.0):
+    """
+        测试集测试与模型评估
+    :param hyper_parameters: json, 超参数
+    :param path_test:str, path of test data, 测试集
+    :param rate: 比率, 抽出rate比率语料取训练
+    :return: None
+    """
+    hyper_parameters = load_json(path_hyper_parameter)
+    if path_test: # 从外部引入测试数据地址
+        hyper_parameters['data']['val_data'] = path_test
+    time_start = time.time()
+    # graph初始化
     graph = Graph(hyper_parameters)
+    print("graph init ok!")
     graph.load_model()
+    print("graph load ok!")
     ra_ed = graph.word_embedding
-    x_val, y_val = pt.preprocess_baidu_qa_2019_idx(path_baidu_qa_2019_valid, ra_ed, rate=1)
-    x_val = x_val.tolist()
-    y_val = y_val.tolist()
+    # 数据预处理
+    pt = PreprocessText()
+    y, x = read_and_process(hyper_parameters['data']['val_data'])
+    # 取该数据集的百分之几的语料测试
+    len_rate = int(len(y) * rate)
+    x = x[1:len_rate]
+    y = y[1:len_rate]
     y_pred = []
     count = 0
-    for x_val_one in x_val:
-        count = count + 1
-        print(x_val_one)
-        ques_embed_1 = np.array([x_val_one[0]])
-        ques_embed_2 = np.array([x_val_one[1]])
-        pred = graph.predict([ques_embed_1, ques_embed_2])
-        print(pred)
-        pred_top1 = pt.prereocess_pred_id(pred[0])
-        print(pred_top1)
-        y_pred.append(pred_top1)
+    for x_one in x:
+        count += 1
+        ques_embed = ra_ed.sentence2idx(x_one)
+        if hyper_parameters['embedding_type'] == 'bert': # bert数据处理, token
+            x_val_1 = np.array([ques_embed[0]])
+            x_val_2 = np.array([ques_embed[1]])
+            x_val = [x_val_1, x_val_2]
+        else:
+            x_val = ques_embed
+        # 预测
+        pred = graph.predict(x_val)
+        pre = pt.prereocess_idx(pred[0])
+        label_pred = pre[0][0][0]
+        if count % 1000==0:
+            print(label_pred)
+        y_pred.append(label_pred)
 
-    acc = 0
-    for i in range(len(y_val)):
-        if y_val[i] == y_pred[i]:
-            acc += 1
-    print('true: {}  total: {}  acc: {}'.format(acc, len(y_val), acc/len(y_val)))
+    print("data pred ok!")
+    # 预测结果转为int类型
+    index_y = [pt.l2i_i2l['l2i'][i] for i in y]
+    index_pred = [pt.l2i_i2l['l2i'][i] for i in y_pred]
+    target_names = [pt.l2i_i2l['i2l'][str(i)] for i in list(set((index_pred + index_y)))]
+    # 评估
+    report_predict = classification_report(index_y, index_pred,
+                                           target_names=target_names, digits=9)
+    print(report_predict)
+    print("耗时:" + str(time.time() - time_start))
 
 
-
-
-def pred_input():
-    hyper_parameters = {'model': {'label': 17,
-                                  'batch_size': 64,
-                                  'embed_size': 30,
-                                  'filters': [2, 3, 4],
-                                  'filters_num': 30,
-                                  'channel_size': 1,
-                                  'dropout': 0.5,
-                                  'decay_step': 100,
-                                  'decay_rate': 0.9,
-                                  'epochs': 20,
-                                  'len_max': 50,
-                                  'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
-                                  'lr': 1e-3,
-                                  'l2': 1e-6,
-                                  'activate_classify': 'softmax',
-                                  'embedding_type': 'bert',  # 还可以填'random'、 'bert' or 'word2vec"
-                                  'is_training': True,
-                                  'model_path': path_model_fast_text_baiduqa_2019,  # 地址可以自己设置
-                                  'rnn_type': 'GRU',
-                                  # type of rnn, select 'LSTM', 'GRU', 'CuDNNGRU', 'CuDNNLSTM', 'Bidirectional-LSTM', 'Bidirectional-GRU'
-                                  'rnn_units': 256,  # large 650, small is 300
-                                  },
-                        'embedding': {'embedding_type': 'bert',
-                                      'corpus_path': path_embedding_bert,
-                                      'level_type': 'char',
-                                      'embed_size': 30,
-                                      'len_max': 50,
-                                      'layer_indexes': [12]  # range 1 to 12
-                                      },
-                        }
-
+def pred_input(path_hyper_parameter=path_hyper_parameters):
+    """
+       输入预测
+    :param path_hyper_parameter: str, 超参存放地址
+    :return: None
+    """
+    # 加载超参数
+    hyper_parameters = load_json(path_hyper_parameter)
     pt = PreprocessText()
+    # 模式初始化和加载
     graph = Graph(hyper_parameters)
     graph.load_model()
     ra_ed = graph.word_embedding
     ques = '我要打王者荣耀'
+    # str to token
     ques_embed = ra_ed.sentence2idx(ques)
-    x_val_1 = np.array([ques_embed[0]])
-    x_val_2 = np.array([ques_embed[1]])
-    x_val = [x_val_1, x_val_2]
+    if hyper_parameters['embedding_type'] == 'bert':
+        x_val_1 = np.array([ques_embed[0]])
+        x_val_2 = np.array([ques_embed[1]])
+        x_val = [x_val_1, x_val_2]
+    else:
+        x_val = ques_embed
+    # 预测
     pred = graph.predict(x_val)
+    # 取id to label and pred
     pre = pt.prereocess_idx(pred[0])
     print(pre)
     while True:
@@ -129,18 +115,44 @@ def pred_input():
         ques = input()
         ques_embed = ra_ed.sentence2idx(ques)
         print(ques_embed)
-        ques_embed_1 = np.array([ques_embed[0]])
-        ques_embed_2 = np.array([ques_embed[1]])
-        pred = graph.predict([ques_embed_1, ques_embed_2])
+        if hyper_parameters['embedding_type'] == 'bert':
+            x_val_1 = np.array([ques_embed[0]])
+            x_val_2 = np.array([ques_embed[1]])
+            x_val = [x_val_1, x_val_2]
+        else:
+            x_val = ques_embed
+        pred = graph.predict(x_val)
         pre = pt.prereocess_idx(pred[0])
         print(pre)
 
 
 if __name__=="__main__":
-    # 可输入 input 预测
-    # pred_input()
 
     # 测试集预测
-    pred_tet()
+    pred_tet(path_test=path_baidu_qa_2019_valid, rate=0.01) # sample条件下设为1,否则训练语料可能会很少
 
+    # 可输入 input 预测
+    pred_input()
+
+# pred
+#               precision    recall  f1-score   support
+#
+#           体育  0.600000000 0.600000000 0.600000000         5
+#           社会  0.700000000 0.583333333 0.636363636        12
+#           电子  1.000000000 0.625000000 0.769230769         8
+#           烦恼  0.615384615 0.800000000 0.695652174        20
+#           汽车  0.444444444 0.800000000 0.571428571         5
+#           商业  0.675675676 0.714285714 0.694444444        35
+#           健康  0.784313725 0.655737705 0.714285714        61
+#           游戏  0.842105263 0.869565217 0.855614973        92
+#           教育  0.722222222 0.672413793 0.696428571        58
+#           文化  0.333333333 0.571428571 0.421052632         7
+#           娱乐  0.600000000 0.525000000 0.560000000        40
+#           育儿  0.285714286 0.400000000 0.333333333         5
+#           电脑  0.804347826 0.725490196 0.762886598        51
+#           生活  0.500000000 0.571428571 0.533333333        49
+#
+#     accuracy                      0.694196429       448
+#    macro avg  0.636252957 0.650977364 0.631718196       448
+# weighted avg  0.709973030 0.694196429 0.697770982       448
 

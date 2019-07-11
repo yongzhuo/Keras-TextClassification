@@ -3,7 +3,8 @@
 # @time     :2019/6/8 11:45
 # @author   :Mo
 # @function :RCNN model
-# paper: http://www.nlpr.ia.ac.cn/cip/~liukang/liukangPageFile/Recurrent%20Convolutional%20Neural%20Networks%20for%20Text%20Classification.pdf
+# paper: Recurrent Convolutional Neural Networks for TextClassiﬁcation(http://www.nlpr.ia.ac.cn/cip/~liukang/liukangPageFile/Recurrent%20Convolutional%20Neural%20Networks%20for%20Text%20Classification.pdf)
+
 
 from __future__ import print_function, division
 
