@@ -32,8 +32,8 @@ def train(hyper_parameters=None, rate=1.0):
     """
     if not hyper_parameters:
         hyper_parameters = {
-            'len_max': 50,  # 句子最大长度, 固定 推荐20-50
-            'embed_size': 50,  # 字/词向量维度
+            'len_max': 30,  # 句子最大长度, 固定 推荐20-50
+            'embed_size': 64,  # 字/词向量维度
             'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
             'trainable': True,  # embedding是静态的还是动态的, 即控制可不可以微调
             'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word'
@@ -90,8 +90,13 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__ == "__main__":
-    train(rate=0.001)  # sample条件下设为1,否则训练语料可能会很少
+    train(rate=0.01)  # sample条件下设为1,否则训练语料可能会很少
     # 注意: 4G的080Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
     # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
     # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
     # 参数较多,不适合用bert,会比较慢和OOM
+
+# 第一个epochs升得比较慢,第二个epoch就好,
+# 14251/14251 [==============================] - 92s 6ms/step - loss: 1.0172 - acc: 0.7000 - val_loss: 1.3411 - val_acc: 0.6158
+# Epoch 00005: val_loss improved from 1.36023 to 1.34107, saving model to
+# Epoch 6/20

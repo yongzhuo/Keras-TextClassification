@@ -2,7 +2,7 @@
 
 
 # keras_textclassification（代码主体,未完待续...）
-    - Bert
+    - Bert-fineture
     - FastText
     - TextCNN
     - charCNN

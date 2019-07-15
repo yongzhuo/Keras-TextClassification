@@ -11,7 +11,7 @@ from keras.layers import Dropout, Flatten
 from keras.layers import SpatialDropout1D, GlobalMaxPooling1D, MaxPooling1D
 from keras.models import Model
 
-from keras_textclassification.keras_layers.Attention_self import AttentionSelf
+from keras_textclassification.keras_layers.attention_self import AttentionSelf
 from keras_textclassification.base.graph import graph
 
 

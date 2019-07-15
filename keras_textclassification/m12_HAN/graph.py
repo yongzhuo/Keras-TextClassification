@@ -11,7 +11,7 @@ from keras import regularizers
 from keras.models import Model
 import keras.backend as K
 
-from keras_textclassification.keras_layers.Attention_self import AttentionSelf
+from keras_textclassification.keras_layers.attention_self import AttentionSelf
 from keras_textclassification.base.graph import graph
 
 
@@ -38,12 +38,10 @@ class HANGraph(graph):
         # char or word
         x_input_word = self.word_embedding.output
         x_word = self.word_level()(x_input_word)
-        x_word_to_sen = AttentionSelf(self.attention_units)(x_word)
-        x_word_to_sen = Dropout(self.dropout)(x_word_to_sen)
+        x_word_to_sen = Dropout(self.dropout)(x_word)
 
         # sentence or doc
         x_sen = self.sentence_level()(x_word_to_sen)
-        x_sen = AttentionSelf(self.attention_units)(x_sen)
         x_sen = Dropout(self.dropout)(x_sen)
 
         x_sen = Flatten()(x_sen)
@@ -51,28 +49,29 @@ class HANGraph(graph):
         dense_layer = Dense(self.label, activation=self.activate_classify)(x_sen)
         output = [dense_layer]
         self.model = Model(self.word_embedding.input, output)
-        self.model.summary(120)
+        self.model.summary(132)
 
     def word_level(self):
-        x_input_word = Input(shape=(None, self.len_max))
-        x = SpatialDropout1D(self.dropout_spatial)(x_input_word)
+        x_input_word = Input(shape=(self.len_max, self.embed_size))
+        # x = SpatialDropout1D(self.dropout_spatial)(x_input_word)
         x = Bidirectional(GRU(units=self.rnn_units,
                               return_sequences=True,
                               activation='relu',
                               kernel_regularizer=regularizers.l2(self.l2),
-                              recurrent_regularizer=regularizers.l2(self.l2)))(x)
-        out_sent = AttentionSelf(2 * self.rnn_units)(x)
+                              recurrent_regularizer=regularizers.l2(self.l2)))(x_input_word)
+        out_sent = AttentionSelf(self.rnn_units*2)(x)
         model = Model(x_input_word, out_sent)
         return model
 
     def sentence_level(self):
-        x_input_sen = Input(shape=(self.len_max_sen, 2 * self.rnn_units))
-        x = SpatialDropout1D(self.dropout_spatial)(x_input_sen)
-        output_doc = Bidirectional(GRU(units=2 * self.rnn_units,
+        x_input_sen = Input(shape=(self.len_max, self.rnn_units*2))
+        # x = SpatialDropout1D(self.dropout_spatial)(x_input_sen)
+        output_doc = Bidirectional(GRU(units=self.rnn_units*2,
                               return_sequences=True,
                               activation='relu',
                               kernel_regularizer=regularizers.l2(self.l2),
-                              recurrent_regularizer=regularizers.l2(self.l2)))(x)
-        model = Model(x_input_sen, output_doc)
+                              recurrent_regularizer=regularizers.l2(self.l2)))(x_input_sen)
+        output_doc_att = AttentionSelf(self.word_embedding.embed_size)(output_doc)
+        model = Model(x_input_sen, output_doc_att)
         return model
 
