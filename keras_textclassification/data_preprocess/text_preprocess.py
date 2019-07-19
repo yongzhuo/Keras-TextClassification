@@ -148,7 +148,7 @@ class PreprocessText:
         save_json(l2i_i2l, path_fast_text_model_l2i_i2l)
 
         len_ql = int(rate * len(ques))
-        if len_ql <= 5000: # sample时候不生效,使得语料足够训练
+        if len_ql <= 500: # sample时候不生效,使得语料足够训练
             len_ql = len(ques)
 
         x = []

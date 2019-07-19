@@ -5,8 +5,9 @@
 # @function :graph of base
 
 
-from keras_textclassification.keras_layers.capsule import CapsuleLayer, PrimaryCap, Length, Mask
-from keras.layers import Conv2D, MaxPool2D, Concatenate
+from keras_textclassification.keras_layers.capsule import Capsule_bojone, CapsuleLayer, PrimaryCap, Length, Mask
+from keras.layers import Conv1D, Conv2D, MaxPool2D, Concatenate, SpatialDropout1D
+from keras.layers import Bidirectional, LSTM, GRU
 from keras.layers import Dropout, Dense, Flatten
 from keras.optimizers import Adam
 from keras.layers import Reshape
@@ -23,8 +24,9 @@ class CapsuleNetGraph(graph):
             初始化
         :param hyper_parameters: json，超参
         """
-        self.routings = hyper_parameters['model'].get('routings', 1)
+        self.routings = hyper_parameters['model'].get('routings', 5)
         self.dim_capsule = hyper_parameters['model'].get('dim_capsule', 16)
+        self.num_capsule = hyper_parameters['model'].get('num_capsule', 16)
         super().__init__(hyper_parameters)
 
     def create_model(self, hyper_parameters):
@@ -35,43 +37,101 @@ class CapsuleNetGraph(graph):
         """
         super().create_model(hyper_parameters)
         embedding = self.word_embedding.output
+        embed_layer = SpatialDropout1D(self.dropout)(embedding)
+        conv_pools = []
+        for filter in self.filters:
+            x = Conv1D(filters=self.filters_num,
+                       kernel_size=filter,
+                       padding='valid',
+                       kernel_initializer='normal',
+                       activation='relu',
+                       )(embed_layer)
+            capsule = Capsule_bojone(num_capsule=self.num_capsule,
+                                  dim_capsule=self.dim_capsule,
+                                  routings=self.routings,
+                                  kernel_size=(filter, 1),
+                                  share_weights=True)(x)
+            conv_pools.append(capsule)
+        capsule = Concatenate(axis=-1)(conv_pools)
+        capsule = Flatten()(capsule)
+        capsule = Dropout(self.dropout)(capsule)
+        output = Dense(self.label, activation='sigmoid')(capsule)
+        self.model = Model(inputs=self.word_embedding.input, outputs=output)
+        self.model.summary(120)
+
+    def create_model_gru(self, hyper_parameters):
+        """
+            构建神经网络, bi-gru + capsule
+        :param hyper_parameters:json,  hyper parameters of network
+        :return: tensor, moedl
+        """
+        super().create_model(hyper_parameters)
+        embedding = self.word_embedding.output
+        embed_layer = SpatialDropout1D(self.dropout)(embedding)
+        x = Bidirectional(GRU(self.filters_num,
+                              activation='relu',
+                              dropout=self.dropout,
+                              recurrent_dropout=self.dropout,
+                              return_sequences=True))(embed_layer)
+        capsule = Capsule_bojone(num_capsule=self.num_capsule,
+                              dim_capsule=self.dim_capsule,
+                              routings=self.routings,
+                              kernel_size=(self.filters[0], 1),
+                              share_weights=True)(x)
+        capsule = Flatten()(capsule)
+        capsule = Dropout(self.dropout)(capsule)
+        output = Dense(self.label, activation='sigmoid')(capsule)
+        self.model = Model(inputs=self.word_embedding.input, outputs=output)
+        self.model.summary(120)
+
+    def create_model_basic(self, hyper_parameters):
+        """
+            构建神经网络, 原版, 速度超级慢
+        :param hyper_parameters:json,  hyper parameters of network
+        :return: tensor, moedl
+        """
+        super().create_model(hyper_parameters)
+        embedding = self.word_embedding.output
+        embedding = SpatialDropout1D(self.dropout)(embedding)
         embedding_reshape = Reshape((self.len_max, self.embed_size, 1))(embedding)
         conv_pools = []
         for filter in self.filters:
             # Layer 1: Just a conventional Conv2D layer
             conv1 = Conv2D(filters=self.filters_num,
                            kernel_size=(filter, self.embed_size),
-                           strides=1,
+                           strides=(1, 1),
                            padding='valid',
                            activation='relu',)(embedding_reshape)
-
+            conv_shape = K.int_shape(conv1)
+            conv1 = Reshape((conv_shape[1], conv_shape[3], conv_shape[2]))(conv1)
             # Layer 2: Conv2D layer with `squash` activation, then reshape to [None, num_capsule, dim_capsule]
             primarycaps = PrimaryCap(inputs=conv1,
                                      dim_capsule=self.dim_capsule,
                                      n_channels=self.channel_size,
-                                     kernel_size=(self.len_max - filter + 1, 1),
+                                     kernel_size=(filter, conv_shape[3]),
                                      strides=(1, 1),
                                      padding='valid')
             # Layer 3: Capsule layer. Routing algorithm works here.
-            digitcaps = CapsuleLayer(num_capsule=self.label,
-                             dim_capsule=int(self.dim_capsule * 2),
-                             routings=self.routings, )(primarycaps)
+            digitcaps = CapsuleLayer(num_capsule=self.num_capsule, #self.label,
+                                     dim_capsule=int(self.dim_capsule * 2),
+                                     routings=self.routings, )(primarycaps)
             conv_pools.append(digitcaps)
         # 拼接
         x = Concatenate(axis=-1)(conv_pools)
-        # x = Flatten()(x)
-        # dense_layer = Dense(self.label, activation=self.activate_classify)(x)
+        x = Flatten()(x)
+        x = Dropout(self.dropout)(x)
+        dense_layer = Dense(self.label, activation=self.activate_classify)(x)
         # out_caps = [dense_layer]
         # Layer 4: This is an auxiliary layer to replace each capsule with its length. Just to match the true label's shape.
         # If using tensorflow, this will not be necessary. :)
-        out_caps = Length(name='capsnet')(x)
+        # out_caps = Length(name='capsnet')(x)
 
 
         # 最后就是softmax
-        self.model = Model(inputs=self.word_embedding.input, outputs=out_caps)
+        self.model = Model(inputs=self.word_embedding.input, outputs=dense_layer)
         self.model.summary(120)
 
-    def create_model_old(self, hyper_parameters):
+    def create_model_margin(self, hyper_parameters):
         """
             构建神经网络
         :param hyper_parameters:json,  hyper parameters of network

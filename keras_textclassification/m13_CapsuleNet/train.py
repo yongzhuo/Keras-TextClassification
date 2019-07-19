@@ -32,16 +32,16 @@ def train(hyper_parameters=None, rate=1.0):
     if not hyper_parameters:
         hyper_parameters = {
             'len_max': 50,  # 句子最大长度, 固定 推荐20-50
-            'embed_size': 96,  # 字/词向量维度
+            'embed_size': 300,  # 字/词向量维度
             'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
             'trainable': False,  # embedding是静态的还是动态的
             'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word'
             'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'random'、 'bert' or 'word2vec"
             'model': {'label': 17,  # 类别数
-                      'batch_size': 64,  # 批处理尺寸
-                      'filters': [3, 4, 5],  # 卷积核尺寸
+                      'batch_size': 16,  # 批处理尺寸
+                      'filters': [2, 3, 4, 5],  # 卷积核尺寸
                       'filters_num': 300,  # 卷积个数 text-cnn:300-600
-                      'channel_size': 3,  # CNN通道数
+                      'channel_size': 16,  # CNN通道数
                       'dropout': 0.5,  # 舍弃概率
                       'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                       'decay_rate': 0.9,  # 学习率衰减系数, 乘法
@@ -56,8 +56,9 @@ def train(hyper_parameters=None, rate=1.0):
                       # 模型地址, loss降低则保存的依据, save_best_only=True, save_weights_only=True
                       'path_hyper_parameters': path_hyper_parameters,  # 模型(包括embedding)，超参数地址,
                       'path_fineture': path_fineture,  # 保存embedding trainable地址, 例如字向量、词向量、bert向量等
-                      'routings': 1,
+                      'routings': 5,
                       'dim_capsule': 16,
+                      'num_capsule': 16
                       },
             'embedding': {'layer_indexes': [12],  # bert取的层数,
                           'corpus_path': '',  # embedding预训练数据地址,不配则会默认取conf里边默认的地址
@@ -89,7 +90,7 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__ == "__main__":
-    train(rate=0.001)  # sample条件下设为1,否则训练语料可能会很少
+    train(rate=0.01)  # sample条件下设为1,否则训练语料可能会很少
     # 注意: 4G的080Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
     # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
     # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory

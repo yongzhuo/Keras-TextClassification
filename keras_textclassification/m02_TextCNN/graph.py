@@ -44,7 +44,7 @@ class TextCNNGraph(graph):
                                )(conv)
             conv_pools.append(pooled)
         # 拼接
-        x = Concatenate(axis=1)(conv_pools)
+        x = Concatenate(axis=-1)(conv_pools)
         x = Flatten()(x)
         x = Dropout(self.dropout)(x)
         output = Dense(units=self.label, activation=self.activate_classify)(x)
