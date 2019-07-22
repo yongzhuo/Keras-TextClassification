@@ -17,7 +17,7 @@ from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, 
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, delete_file
 # 模型图
-from keras_textclassification.m13_CapsuleNet.graph import CapsuleNetGraph as Graph
+from keras_textclassification.m14_transformer.graph import TransformerEncodeGraph as Graph
 # 计算时间
 import time
 
@@ -32,7 +32,7 @@ def train(hyper_parameters=None, rate=1.0):
     if not hyper_parameters:
         hyper_parameters = {
             'len_max': 50,  # 句子最大长度, 固定 推荐20-50
-            'embed_size': 300,  # 字/词向量维度
+            'embed_size': 768,  # 字/词向量维度
             'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
             'trainable': True,  # embedding是静态的还是动态的
             'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word'
@@ -40,12 +40,12 @@ def train(hyper_parameters=None, rate=1.0):
             'gpu_memory_fraction': 0.66,  # gpu使用率
             'model': {'label': 17,  # 类别数
                       'batch_size': 64,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
-                      'dropout': 0.5,  # 随机失活, 概率
+                      'dropout': 0.1,  # 随机失活, 概率
                       'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                       'decay_rate': 0.9,  # 学习率衰减系数, 乘法
                       'epochs': 50,  # 训练最大轮次
                       'patience': 5,  # 早停,2-3就好
-                      'lr': 5e-4,  # 学习率, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
+                      'lr': 1e-3,  # 学习率, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
                       'l2': 1e-9,  # l2正则化
                       'activate_classify': 'softmax',  # 最后一个layer, 即分类激活函数
                       'loss': 'categorical_crossentropy',  # 损失函数
@@ -54,10 +54,15 @@ def train(hyper_parameters=None, rate=1.0):
                       'model_path': path_model,  # 模型地址, loss降低则保存的依据, save_best_only=True, save_weights_only=True
                       'path_fineture': path_fineture,  # 保存embedding trainable地址, 例如字向量、词向量、bert向量等
                       'path_hyper_parameters': path_hyper_parameters,  # 模型(包括embedding)，超参数地址,
-                      'routings': 5,
-                      'dim_capsule': 16,
-                      'num_capsule': 16,
                       'droupout_spatial': 0.25,
+                      'encoder_num': 1,
+                      'head_num': 12,
+                      'hidden_dim': 3072,
+                      'attention_activation': 'relu',
+                      'feed_forward_activation': 'relu',
+                      'use_adapter': False,
+                      'adapter_units': 768,
+                      'adapter_activation': 'relu',
                       },
             'embedding': {'layer_indexes': [12],  # bert取的层数,
                           'corpus_path': '',  # embedding预训练数据地址,不配则会默认取conf里边默认的地址

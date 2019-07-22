@@ -67,6 +67,7 @@
 * SelfAttention: [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 * HAN: [Hierarchical Attention Networks for Document Classification](https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
 * CapsuleNet: [Dynamic Routing Between Capsules](https://arxiv.org/pdf/1710.09829.pdf)
+* Transformer(encode or decode): [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 
 # 参考/感谢
 * 文本分类项目:   [https://github.com/mosu027/TextClassification](https://github.com/mosu027/TextClassification)
@@ -75,3 +76,5 @@
 * 文本分类Ipty : [https://github.com/lpty/classifier](https://github.com/lpty/classifier)
 * keras文本分类: [https://github.com/ShawnyXiao/TextClassification-Keras](https://github.com/ShawnyXiao/TextClassification-Keras)
 * keras文本分类: [https://github.com/AlexYangLi/TextClassification](https://github.com/AlexYangLi/TextClassification)
+* CapsuleNet模型: [https://github.com/bojone/Capsule](https://github.com/bojone/Capsule)
+# transformer模型: [https://github.com/CyberZHG/keras-transformer](https://github.com/CyberZHG/keras-transformer)

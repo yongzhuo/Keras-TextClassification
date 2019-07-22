@@ -25,14 +25,14 @@ class BaseEmbedding:
     def __init__(self, hyper_parameters):
         self.len_max = hyper_parameters.get('len_max', 50)  # 文本最大长度, 建议25-50
         self.embed_size = hyper_parameters.get('embed_size', 300)  # 嵌入层尺寸
-        self.vocab_size = hyper_parameters.get('vocab_size', 30000) # 字典大小, 这里随便填的，会根据代码里修改
+        self.vocab_size = hyper_parameters.get('vocab_size', 30000)  # 字典大小, 这里随便填的，会根据代码里修改
         self.trainable = hyper_parameters.get('trainable', False)  # 是否微调, 例如静态词向量、动态词向量、微调bert层等, random也可以
         self.level_type = hyper_parameters.get('level_type', 'char')  # 还可以填'word'
         self.embedding_type = hyper_parameters.get('embedding_type', 'word2vec')  # 词嵌入方式，可以选择'bert'、'random'、'word2vec'
 
         # 自适应, 根据level_type和embedding_type判断corpus_path
-        if self.level_type=="word":
-            if self.embedding_type=="random":
+        if self.level_type == "word":
+            if self.embedding_type == "random":
                 self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_random_word)
             elif self.embedding_type == "word2vec":
                 self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_vector_word2vec_word)
@@ -40,8 +40,8 @@ class BaseEmbedding:
                 raise RuntimeError("bert level_type is 'char', not 'word'")
             else:
                 raise RuntimeError("embedding_type must be 'random', 'word2vec' or 'bert'")
-        elif self.level_type=="char":
-            if self.embedding_type=="random":
+        elif self.level_type == "char":
+            if self.embedding_type == "random":
                 self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_random_char)
             elif self.embedding_type == "word2vec":
                 self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_vector_word2vec_char)
@@ -52,14 +52,14 @@ class BaseEmbedding:
         else:
             raise RuntimeError("level_type must be 'char' or 'word'")
         # 定义的符号
-        self.ot_dict = { 'PAD': 0,
-                         'UNK': 1,
-                         'BOS': 2,
-                         'EOS': 3, }
+        self.ot_dict = {'PAD': 0,
+                        'UNK': 1,
+                        'BOS': 2,
+                        'EOS': 3, }
         self.deal_corpus()
         self.build()
 
-    def deal_corpus(self): # 处理语料
+    def deal_corpus(self):  # 处理语料
         pass
 
     def build(self):
@@ -132,12 +132,12 @@ class RandomEmbedding(BaseEmbedding):
 
     def build(self, **kwargs):
         self.vocab_size = len(self.token2idx)
-        self.input = Input(shape=(self.len_max, ), dtype='int32')
+        self.input = Input(shape=(self.len_max,), dtype='int32')
         self.output = Embedding(self.vocab_size,
-                            self.embed_size,
-                            input_length=self.len_max,
-                            trainable=self.trainable,
-                            )(self.input)
+                                self.embed_size,
+                                input_length=self.len_max,
+                                trainable=self.trainable,
+                                )(self.input)
         self.model = Model(self.input, self.output)
 
 
@@ -170,15 +170,15 @@ class WordEmbedding(BaseEmbedding):
         for key, value in self.token2idx.items():
             self.idx2token[value] = key
 
-        len_token2idx = len(self.token2idx)
+        self.vocab_size = len(self.token2idx)
         embedding_matrix = np.array(embedding_matrix)
         self.input = Input(shape=(self.len_max,), dtype='int32')
 
-        self.output = Embedding(len_token2idx,
-                            self.embed_size,
-                            input_length=self.len_max,
-                            weights=[embedding_matrix],
-                            trainable=self.trainable)(self.input)
+        self.output = Embedding(self.vocab_size,
+                                self.embed_size,
+                                input_length=self.len_max,
+                                weights=[embedding_matrix],
+                                trainable=self.trainable)(self.input)
         self.model = Model(self.input, self.output)
 
 
@@ -211,7 +211,7 @@ class BertEmbedding(BaseEmbedding):
         # 分类如果只有一层，就只取最后那一层的weight；取得不正确，就默认取最后一层
         elif len(self.layer_indexes) == 1:
             if self.layer_indexes[0] in [i + 1 for i in range(12)]:
-                encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0]-1]).output
+                encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0] - 1]).output
             else:
                 encoder_layer = model.get_layer(index=layer_dict[-1]).output
         # 否则遍历需要取的层，把所有层的weight取出来并拼接起来shape:768*层数
@@ -246,7 +246,7 @@ class BertEmbedding(BaseEmbedding):
             for line in reader:
                 token = line.strip()
                 self.token_dict[token] = len(self.token_dict)
-
+        self.vocab_size = len(self.token_dict)
         self.tokenizer = keras_bert.Tokenizer(self.token_dict)
 
     def sentence2idx(self, text):
@@ -254,3 +254,4 @@ class BertEmbedding(BaseEmbedding):
         # input_mask = [0 if ids == 0 else 1 for ids in input_id]
         # return input_id, input_type_id, input_mask
         return [input_id, input_type_id]
+

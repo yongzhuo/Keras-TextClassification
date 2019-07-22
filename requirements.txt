@@ -7,5 +7,4 @@ tflearn==0.3.2
 tqdm==4.31.1
 passlib==1.7.1
 keras==2.2.4
-tensorflow-gpu==1.12.0
 keras-bert==0.41.0

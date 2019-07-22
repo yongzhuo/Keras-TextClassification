@@ -2,7 +2,7 @@
 # !/usr/bin/python
 # @time     :2019/6/3 10:51
 # @author   :Mo
-# @function :graph of base
+# @function :graph of CapsuleNet
 
 
 from keras_textclassification.keras_layers.capsule import Capsule_bojone, CapsuleLayer, PrimaryCap, Length, Mask
@@ -55,7 +55,7 @@ class CapsuleNetGraph(graph):
         capsule = Concatenate(axis=-1)(conv_pools)
         capsule = Flatten()(capsule)
         capsule = Dropout(self.dropout)(capsule)
-        output = Dense(self.label, activation='sigmoid')(capsule)
+        output = Dense(self.label, activation=self.activate_classify)(capsule)
         self.model = Model(inputs=self.word_embedding.input, outputs=output)
         self.model.summary(120)
 
@@ -68,19 +68,32 @@ class CapsuleNetGraph(graph):
         super().create_model(hyper_parameters)
         embedding = self.word_embedding.output
         embed_layer = SpatialDropout1D(self.dropout)(embedding)
-        x = Bidirectional(GRU(self.filters_num,
+        x_bi = Bidirectional(GRU(self.filters_num,
                               activation='relu',
                               dropout=self.dropout,
                               recurrent_dropout=self.dropout,
                               return_sequences=True))(embed_layer)
+        # 一层
         capsule = Capsule_bojone(num_capsule=self.num_capsule,
                               dim_capsule=self.dim_capsule,
                               routings=self.routings,
-                              kernel_size=(self.filters[0], 1),
-                              share_weights=True)(x)
+                              kernel_size=(3, 1),
+                              share_weights=True)(x_bi)
+
+        # # pooling多层
+        # conv_pools = []
+        # for filter in self.filters:
+        #     capsule = Capsule_bojone(num_capsule=self.num_capsule,
+        #                              dim_capsule=self.dim_capsule,
+        #                              routings=self.routings,
+        #                              kernel_size=(filter, 1),
+        #                              share_weights=True)(x_bi)
+        #     conv_pools.append(capsule)
+        # capsule = Concatenate(axis=-1)(conv_pools)
+
         capsule = Flatten()(capsule)
         capsule = Dropout(self.dropout)(capsule)
-        output = Dense(self.label, activation='sigmoid')(capsule)
+        output = Dense(self.label, activation=self.activate_classify)(capsule)
         self.model = Model(inputs=self.word_embedding.input, outputs=output)
         self.model.summary(120)
 
