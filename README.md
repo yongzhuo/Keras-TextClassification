@@ -16,6 +16,7 @@
     - SelfAttention
     - HAN
     - CapsuleNet
+    - Transformer-encode
 
 
 # run(运行, 以FastText为例)
@@ -77,4 +78,4 @@
 * keras文本分类: [https://github.com/ShawnyXiao/TextClassification-Keras](https://github.com/ShawnyXiao/TextClassification-Keras)
 * keras文本分类: [https://github.com/AlexYangLi/TextClassification](https://github.com/AlexYangLi/TextClassification)
 * CapsuleNet模型: [https://github.com/bojone/Capsule](https://github.com/bojone/Capsule)
-# transformer模型: [https://github.com/CyberZHG/keras-transformer](https://github.com/CyberZHG/keras-transformer)
+* transformer模型: [https://github.com/CyberZHG/keras-transformer](https://github.com/CyberZHG/keras-transformer)
