@@ -17,7 +17,7 @@ from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, 
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, delete_file
 # 模型图
-from keras_textclassification.m14_transformer.graph import TransformerEncodeGraph as Graph
+from keras_textclassification.m14_Transformer.graph import TransformerEncodeGraph as Graph
 # 计算时间
 import time
 
