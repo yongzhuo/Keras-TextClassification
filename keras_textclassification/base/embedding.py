@@ -33,20 +33,20 @@ class BaseEmbedding:
         # 自适应, 根据level_type和embedding_type判断corpus_path
         if self.level_type == "word":
             if self.embedding_type == "random":
-                self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_random_word)
+                self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_random_word)
             elif self.embedding_type == "word2vec":
-                self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_vector_word2vec_word)
+                self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_vector_word2vec_word)
             elif self.embedding_type == "bert":
                 raise RuntimeError("bert level_type is 'char', not 'word'")
             else:
                 raise RuntimeError("embedding_type must be 'random', 'word2vec' or 'bert'")
         elif self.level_type == "char":
             if self.embedding_type == "random":
-                self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_random_char)
+                self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_random_char)
             elif self.embedding_type == "word2vec":
-                self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_vector_word2vec_char)
+                self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_vector_word2vec_char)
             elif self.embedding_type == "bert":
-                self.corpus_path = hyper_parameters.get('corpus_path', path_embedding_bert)
+                self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_bert)
             else:
                 raise RuntimeError("embedding_type must be 'random', 'word2vec' or 'bert'")
         else:
