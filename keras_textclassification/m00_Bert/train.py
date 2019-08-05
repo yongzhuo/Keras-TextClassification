@@ -60,7 +60,7 @@ def train(hyper_parameters=None, rate=1.0):
                   'path_fineture': path_fineture,  # 保存embedding trainable地址, 例如字向量、词向量、bert向量等
                   },
         'embedding': {'layer_indexes': [12], # bert取的层数,
-                      'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址
+                      # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址
                         },
         'data':{'train_data': path_baidu_qa_2019_train, # 训练数据
                 'val_data': path_baidu_qa_2019_valid    # 验证数据
