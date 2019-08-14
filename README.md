@@ -56,7 +56,7 @@
 
 # 项目说明
   - 1. 构建了base基类(网络(graph)、向量嵌入(词、字、句子embedding)),后边的具体模型继承它们，代码简单
-  - 2. conf存放项目数据、模型的地址, data存放数据和语料, etl为数据预处理模块,
+  - 2. keras_layers存放一些常用的layer, conf存放项目数据、模型的地址, data存放数据和语料, data_preprocess为数据预处理模块,
 
 
 # 模型与论文paper题与地址
