@@ -42,7 +42,7 @@ def train(hyper_parameters=None, rate=1.0):
                   'patience': 3, # 早停,2-3就好
                   'lr': 1e-3,  # 学习率, bert取5e-5, 其他取1e-3, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
                   'l2': 1e-9,  # l2正则化
-                  'activate_classify': 'softmax',  # 最后一个layer, 即分类激活函数
+                  'activate_classify': 'sigmoid', # 'softmax',  # 最后一个layer, 即分类激活函数
                   'loss': 'categorical_crossentropy',  # 损失函数, 可能有问题, 可以自己定义
                   'metrics': 'top_k_categorical_accuracy',  # 1070个类, 太多了先用topk,  这里数据k设置为最大:33
                   # 'metrics': 'categorical_accuracy',  # 保存更好模型的评价标准

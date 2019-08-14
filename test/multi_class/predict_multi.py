@@ -52,7 +52,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
     pre = pt.prereocess_idx(pred[0])
     ls_nulti = []
     for ls in pre[0]:
-        if ls[1] >= 0.1:
+        if ls[1] >= 0.5:
             ls_nulti.append(ls)
     print(pre[0])
     print(ls_nulti)
@@ -71,7 +71,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
         pre = pt.prereocess_idx(pred[0])
         ls_nulti = []
         for ls in pre[0]:
-            if ls[1] >= 0.1:
+            if ls[1] >= 0.5:
                 ls_nulti.append(ls)
         print(pre[0])
         print(ls_nulti)

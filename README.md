@@ -41,7 +41,7 @@
     - baidu_qa_2019（百度qa问答语料，只取title作为分类样本，17个类，有一个是空''，已经压缩上传）
        - baike_qa_train.csv
        - baike_qa_valid.csv
-    -byte_multi_news（今日头条2018新闻标题多标签语料，1070个标签，fate233爬取, 地址为: [byte_multi_news](https://github.com/fate233/toutiao-multilevel-text-classfication-dataset)）
+    - byte_multi_news（今日头条2018新闻标题多标签语料，1070个标签，fate233爬取, 地址为: [byte_multi_news](https://github.com/fate233/toutiao-multilevel-text-classfication-dataset)）
        -labels.csv
        -train.csv
        -valid.csv
