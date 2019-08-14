@@ -27,6 +27,7 @@
 
 # run(test/sample实例)
     - bert,word2vec,random样例在test/目录下, 注意word2vec(char or word), random-word,  bert(chinese_L-12_H-768_A-12)未全部加载,需要下载
+    - multi_class/目录下以text-cnn为例进行多标签分类实例，转化为multi-onehot标签类别，分类则取一定阀值的类
     - predict_bert_text_cnn.py
     - tet_char_bert_embedding.py
     - tet_char_random_embedding.py
@@ -40,6 +41,10 @@
     - baidu_qa_2019（百度qa问答语料，只取title作为分类样本，17个类，有一个是空''，已经压缩上传）
        - baike_qa_train.csv
        - baike_qa_valid.csv
+    -byte_multi_news（今日头条2018新闻标题多标签语料，1070个标签，fate233爬取, 地址为: [byte_multi_news](https://github.com/fate233/toutiao-multilevel-text-classfication-dataset)）
+       -labels.csv
+       -train.csv
+       -valid.csv
     - embeddings
        - chinese_L-12_H-768_A-12/(取谷歌预训练好点的模型，已经压缩上传)
        - term_char.txt(已经上传, 项目中已全, wiki字典, 还可以用新华字典什么的)
@@ -57,7 +62,8 @@
 # 模型与论文paper题与地址
 * FastText:   [Bag of Tricks for Efﬁcient Text Classiﬁcation](https://arxiv.org/abs/1607.01759)
 * TextCNN：   [Convolutional Neural Networks for Sentence Classiﬁcation](https://arxiv.org/abs/1408.5882)
-* charCNN：   [Character-Aware Neural Language Models](https://arxiv.org/abs/1508.06615)
+* charCNN-kim：   [Character-Aware Neural Language Models](https://arxiv.org/abs/1508.06615)
+* charCNN-zhang:  [Character-level Convolutional Networks for Text Classiﬁcation](https://arxiv.org/pdf/1509.01626.pdf)
 * TextRNN：   [Recurrent Neural Network for Text Classification with Multi-Task Learning](https://www.ijcai.org/Proceedings/16/Papers/408.pdf)
 * RCNN：      [Recurrent Convolutional Neural Networks for Text Classification](http://www.nlpr.ia.ac.cn/cip/~liukang/liukangPageFile/Recurrent%20Convolutional%20Neural%20Networks%20for%20Text%20Classification.pdf)
 * DCNN:       [A Convolutional Neural Network for Modelling Sentences](https://arxiv.org/abs/1404.2188)

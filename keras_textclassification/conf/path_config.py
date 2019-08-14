@@ -21,6 +21,11 @@ path_embedding_vector_word2vec_word = path_root + '/data/embeddings/w2v_model_me
 path_baidu_qa_2019_train = path_root + '/data/baidu_qa_2019/baike_qa_train.csv'
 path_baidu_qa_2019_valid = path_root + '/data/baidu_qa_2019/baike_qa_valid.csv'
 
+# 今日头条新闻多标签分类
+path_byte_multi_news_train = path_root + '/data/byte_multi_news/train.csv'
+path_byte_multi_news_valid = path_root + '/data/byte_multi_news/valid.csv'
+path_byte_multi_news_label = path_root + '/data/byte_multi_news/labels.csv'
+
 # fast_text config
 # 模型目录
 path_model_dir =  path_root + "/data/model/fast_text/"
