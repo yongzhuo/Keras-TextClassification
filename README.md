@@ -25,9 +25,9 @@
     - 3. 预测: 运行 predict.py, 例如: python predict.py
     - 说明: 默认不带pre train的random embedding，训练和验证语料只有100条，完整语料移步下面data查看下载
 
-# run(test/sample实例)
+# run(多标签分类/Embedding/test/sample实例)
     - bert,word2vec,random样例在test/目录下, 注意word2vec(char or word), random-word,  bert(chinese_L-12_H-768_A-12)未全部加载,需要下载
-    - multi_class/目录下以text-cnn为例进行多标签分类实例，转化为multi-onehot标签类别，分类则取一定阀值的类
+    - multi_multi_class/目录下以text-cnn为例进行多标签分类实例，转化为multi-onehot标签类别，分类则取一定阀值的类
     - predict_bert_text_cnn.py
     - tet_char_bert_embedding.py
     - tet_char_random_embedding.py
