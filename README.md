@@ -7,7 +7,7 @@ pip install Keras-TextClassification
 ```
 
 ```python
-step2: download and unzip the dir of 'data.rar', addr:[https://pan.baidu.com/s/1I3vydhmFEQ9nuPG2fDou8Q](https://pan.baidu.com/s/1I3vydhmFEQ9nuPG2fDou8Q) 提取码: rket
+step2: download and unzip the dir of 'data.rar', 地址: https://pan.baidu.com/s/1I3vydhmFEQ9nuPG2fDou8Q 提取码: rket
        cover the dir of data to anaconda, like '/anaconda/3.5.1/envs/tensorflow13/Lib/site-packages/keras_textclassification/data'
 step3: goto # Train&Usage(调用) and Predict&Usage(调用)
 ```
