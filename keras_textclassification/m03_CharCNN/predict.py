@@ -19,6 +19,7 @@ from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, 
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, read_and_process, load_json
 # 模型图
 from keras_textclassification.m03_CharCNN.graph_yoon_kim import CharCNNGraph as Graph
+# from keras_textclassification.m03_CharCNN.graph_zhang import CharCNNGraph as Graph
 # 模型评估
 from sklearn.metrics import classification_report
 # 计算时间
@@ -118,7 +119,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
 
 if __name__=="__main__":
     # 测试集预测
-    pred_tet(path_test=path_baidu_qa_2019_valid, rate=0.01) # sample条件下设为1,否则训练语料可能会很少
+    # pred_tet(path_test=path_baidu_qa_2019_valid, rate=0.01) # sample条件下设为1,否则训练语料可能会很少
 
     # 可输入 input 预测
     pred_input()

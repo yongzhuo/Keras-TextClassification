@@ -201,7 +201,7 @@ class BertEmbedding(BaseEmbedding):
         # bert model all layers
         layer_dict = [7]
         layer_0 = 7
-        for i in range(12):
+        for i in range(13):
             layer_0 = layer_0 + 8
             layer_dict.append(layer_0)
         print(layer_dict)
@@ -210,7 +210,7 @@ class BertEmbedding(BaseEmbedding):
             encoder_layer = model.output
         # 分类如果只有一层，就只取最后那一层的weight；取得不正确，就默认取最后一层
         elif len(self.layer_indexes) == 1:
-            if self.layer_indexes[0] in [i + 1 for i in range(12)]:
+            if self.layer_indexes[0] in [i + 1 for i in range(13)]:
                 encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0] - 1]).output
             else:
                 encoder_layer = model.get_layer(index=layer_dict[-1]).output
@@ -218,7 +218,7 @@ class BertEmbedding(BaseEmbedding):
         else:
             # layer_indexes must be [1,2,3,......12]
             # all_layers = [model.get_layer(index=lay).output if lay is not 1 else model.get_layer(index=lay).output[0] for lay in layer_indexes]
-            all_layers = [model.get_layer(index=layer_dict[lay - 1]).output if lay in [i + 1 for i in range(12)]
+            all_layers = [model.get_layer(index=layer_dict[lay - 1]).output if lay in [i + 1 for i in range(13)]
                           else model.get_layer(index=layer_dict[-1]).output  # 如果给出不正确，就默认输出最后一层
                           for lay in self.layer_indexes]
             all_layers_select = []

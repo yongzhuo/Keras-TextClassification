@@ -37,13 +37,13 @@ def train(hyper_parameters=None, rate=1.0):
         'trainable': True,  # embedding是静态的还是动态的, 即控制可不可以微调
         'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word'
         'embedding_type': 'bert',  # 级别, 嵌入类型, 还可以填'random'、 'bert' or 'word2vec"
-        'gpu_memory_fraction': 0.66, #gpu使用率
+        'gpu_memory_fraction': 0.76, #gpu使用率
         'model': {'label': 17,  # 类别数
                   'batch_size': 32,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
                   'filters': [2, 3, 4, 5],  # 卷积核尺寸
                   'filters_num': 300,  # 卷积个数 text-cnn:300-600
                   'channel_size': 1,  # CNN通道数
-                  'dropout': 0.32,  # 随机失活, 概率
+                  'dropout': 0.5,  # 随机失活, 概率
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                   'decay_rate': 0.9,  # 学习率衰减系数, 乘法
                   'epochs': 20,  # 训练最大轮次
@@ -59,8 +59,8 @@ def train(hyper_parameters=None, rate=1.0):
                   'path_hyper_parameters': path_hyper_parameters,  # 模型(包括embedding)，超参数地址,
                   'path_fineture': path_fineture,  # 保存embedding trainable地址, 例如字向量、词向量、bert向量等
                   },
-        'embedding': {'layer_indexes': [12], # bert取的层数,
-                      # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址
+        'embedding': {'layer_indexes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], # bert取的层数,包括embedding层
+                      # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
                         },
         'data':{'train_data': path_baidu_qa_2019_train, # 训练数据
                 'val_data': path_baidu_qa_2019_valid    # 验证数据
@@ -99,3 +99,6 @@ if __name__=="__main__":
 # 1425/1425 [==============================] - 19s 13ms/step - loss: 0.6402 - acc: 0.8112 - val_loss: 0.9332 - val_acc: 0.7045
 # Epoch 00002: val_loss improved from 1.26402 to 0.93323, saving model
 # Epoch 3/20
+
+
+# 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm), keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)

@@ -34,7 +34,7 @@ def train(hyper_parameters=None, rate=1.0):
         'embedding_type': 'bert',  # 级别, 嵌入类型, 还可以填'random'、 'bert' or 'word2vec"
         'gpu_memory_fraction': 0.66, #gpu使用率
         'model': {'label': 17,  # 类别数
-                  'batch_size': 32,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
+                  'batch_size': 2,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
                   'dropout': 0.32,  # 随机失活, 概率
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                   'decay_rate': 0.9,  # 学习率衰减系数, 乘法
@@ -51,9 +51,11 @@ def train(hyper_parameters=None, rate=1.0):
                   'path_hyper_parameters': path_hyper_parameters,  # 模型(包括embedding)，超参数地址,
                   'path_fineture': path_fineture,  # 保存embedding trainable地址, 例如字向量、词向量、bert向量等
                   },
-        'embedding': {'layer_indexes': [12], # bert取的层数
-                      # 'corpus_path': '', # embedding预训练数据地址,不配则会默认取conf里边默认的地址
-                        },
+        'embedding': {'layer_indexes': [1, 2, 3, 12, 13], # bert取的层数，1为embedding层，未处理
+                      # 'corpus_path': 'Y:/BaiduNetdiskDownload/DataSet/bert-model/chinese_bert_chinese_wwm_L-12_H-768_A-12', # embedding预训练数据地址,不配则会默认取conf里边默认的地址
+                      'corpus_path':'Y:/BaiduNetdiskDownload/DataSet/bert-model/baidu_ernie',
+                      # keras - bert可以加载谷歌版bert, 百度版ernie(需转换，https: // github.com / ArthurRizar / tensorflow_ernie), 哈工大版bert - wwm(tf框架，https: // github.com / ymcui / Chinese - BERT - wwm)
+                      },
         'data':{'train_data': path_baidu_qa_2019_train, # 训练数据
                 'val_data': path_baidu_qa_2019_valid    # 验证数据
                 },
@@ -82,7 +84,7 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__=="__main__":
-    train(rate=0.01)
+    train(rate=1)
     # 注意: 4G的080Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
     # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
     # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
