@@ -23,7 +23,7 @@ with codecs.open('requirements.txt', 'r', 'utf8') as reader:
     install_requires = list(map(lambda x: x.strip(), reader.readlines()))
 
 setup(name=NAME,
-        version='0.0.3',
+        version='0.1.3',
         description=DESCRIPTION,
         long_description=long_description,
         long_description_content_type="text/markdown",
@@ -57,4 +57,21 @@ if __name__ == "__main__":
 #     python setup.py install
 
 # python setup.py bdist_wheel --universal
-# twine upload dist/*
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# pip uninstall Keras-TextClassification

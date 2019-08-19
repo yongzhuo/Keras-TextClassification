@@ -6,6 +6,12 @@
 pip install Keras-TextClassification
 ```
 
+```python
+step2: download and unzip the dir of 'data.rar', addr:[https://pan.baidu.com/s/1I3vydhmFEQ9nuPG2fDou8Q](https://pan.baidu.com/s/1I3vydhmFEQ9nuPG2fDou8Q) 提取码: rket
+       cover the dir of data to anaconda, like '/anaconda/3.5.1/envs/tensorflow13/Lib/site-packages/keras_textclassification/data'
+step3: goto # Train&Usage(调用) and Predict&Usage(调用)
+```
+
 # keras_textclassification（代码主体,未完待续...）
     - Bert-fineture
     - FastText
@@ -103,6 +109,7 @@ import os
 project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 sys.path.append(project_path)
 
+from keras_textclassification.conf.path_config import path_model_dir
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, delete_file
 # 模型图
@@ -112,10 +119,10 @@ import time
 
 
 # 可配置地址
-path_model_dir = 'Y:/tet_keras_textclassification/'
-path_model = path_model_dir + 'model/textcnn.model'
-path_fineture = path_model_dir + 'model/fineture.embedding'
-path_hyper_parameters = path_model_dir + 'model/hyper_parameters.json'
+# path_model_dir = 'Y:/tet_keras_textclassification/'
+path_model = path_model_dir + '/textcnn.model'
+path_fineture = path_model_dir + '/fineture.embedding'
+path_hyper_parameters = path_model_dir + '/hyper_parameters.json'
 
 # 输入训练验证文件地址,sample数据集label填17
 # path_train = path_model_dir + 'data/train.csv'
@@ -124,7 +131,7 @@ path_hyper_parameters = path_model_dir + 'model/hyper_parameters.json'
 path_train = ['游戏,斩 魔仙 者 称号 怎么 得来 的', '文化,我爱你 古文 怎么 说', '健康,牙龈 包住 牙齿 怎么办']
 path_valid = ['娱乐,李克勤 什么 歌 好听', '电脑,UPS 电源 工作 原理', '文化,我爱你 古文 怎么 说 的 呢']
 # 会删除存在的model目录下的所有文件
-path_model_dir = 'Y:/tet_keras_textclassification/model/'
+# path_model_dir = 'Y:/tet_keras_textclassification/model/'
 
 
 def train(hyper_parameters=None, rate=1.0):
@@ -132,15 +139,15 @@ def train(hyper_parameters=None, rate=1.0):
         # 可配置参数
         hyper_parameters = {
         'len_max': 50,  # 句子最大长度, 固定推荐20-50, bert越长会越慢, 占用空间也会变大, 本地win10-4G设为20就好, 过大小心OOM
-        'embed_size': 768,  # 字/词向量维度, bert取768, word取300, char可以更小些
+        'embed_size': 300,  # 字/词向量维度, bert取768, word取300, char可以更小些
         'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
         'trainable': True,  # embedding是静态的还是动态的, 即控制可不可以微调
         'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
         'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'random'、 'bert' or 'word2vec"
         'gpu_memory_fraction': 0.66, #gpu使用率
         'model': {'label': 3,  # 类别数
-                  'batch_size': 32,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
-                  'dropout': 0.32,  # 随机失活, 概率
+                  'batch_size': 5,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
+                  'dropout': 0.5,  # 随机失活, 概率
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                   'decay_rate': 0.9,  # 学习率衰减系数, 乘法
                   'epochs': 20,  # 训练最大轮次
@@ -191,7 +198,6 @@ if __name__=="__main__":
     # 注意: 4G的080Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
     # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
     # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
-
 ```
 
 
@@ -208,8 +214,8 @@ sys.path.append(project_path)
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, read_and_process, load_json
 # 模型图
 from keras_textclassification.m02_TextCNN.graph import TextCNNGraph as Graph
-# 模型评估
-from sklearn.metrics import classification_report
+
+from keras_textclassification.conf.path_config import path_model_dir
 # 计算时间
 import time
 
@@ -257,8 +263,7 @@ def pred_input(path_hyper_parameter):
 
 if __name__=="__main__":
     # 可输入 input 预测
-    pred_input(path_hyper_parameter='Y:/tet_keras_textclassification/model/hyper_parameters.json')
-
+    pred_input(path_hyper_parameter=path_model_dir + '/hyper_parameters.json')
 ```
 
 
