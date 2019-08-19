@@ -76,11 +76,20 @@ def read_and_process(path):
     :param path: 
     :return: 
     """
-    with open(path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-        lines_x = [extract_chinese(line.split(",")[0]) for line in lines]
-        line_y = [extract_chinese(line.split(",")[1]) for line in lines]
-        return lines_x, line_y
+    # with open(path, 'r', encoding='utf-8') as f:
+    #     lines = f.readlines()
+    #     line_x = [extract_chinese(str(line.split(",")[0])) for line in lines]
+    #     line_y = [extract_chinese(str(line.split(",")[1])) for line in lines]
+    #     return line_x, line_y
+
+    data = pd.read_csv(path)
+    ques = data["ques"].values.tolist()
+    labels = data["label"].values.tolist()
+    line_x = [extract_chinese(str(line).upper()) for line in labels]
+    line_y = [extract_chinese(str(line).upper()) for line in ques]
+    return line_x, line_y
+
+
 
 
 def preprocess_label_ques(path):
@@ -176,18 +185,23 @@ class PreprocessText:
         label = data['label'].tolist()
         ques = [str(q).upper() for q in ques]
         label = [str(l).upper() for l in label]
-        label_set = set(label)
-        count = 0
-        label2index = {}
-        index2label = {}
-        for label_one in label_set:
-            label2index[label_one] = count
-            index2label[count] = label_one
-            count = count + 1
-        l2i_i2l = {}
-        l2i_i2l['l2i'] = label2index
-        l2i_i2l['i2l'] = index2label
-        save_json(l2i_i2l, path_fast_text_model_l2i_i2l)
+
+        if not os.path.exists(path_fast_text_model_l2i_i2l):
+            label_set = set(label)
+            count = 0
+            label2index = {}
+            index2label = {}
+            for label_one in label_set:
+                label2index[label_one] = count
+                index2label[count] = label_one
+                count = count + 1
+
+            l2i_i2l = {}
+            l2i_i2l['l2i'] = label2index
+            l2i_i2l['i2l'] = index2label
+            save_json(l2i_i2l, path_fast_text_model_l2i_i2l)
+        else:
+            l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
 
         len_ql = int(rate * len(ques))
         if len_ql <= 500: # sample时候不生效,使得语料足够训练
@@ -293,33 +307,29 @@ class PreprocessTextMulti:
 
         ques = [str(q).strip().upper() for q in ques]
 
-        # label = [[l_ for l_ in str(l).upper().split(',')] for l in label]
-        # 获取单个标签, 如 ['news,tips', 'news,news_tech']转化为['news','tips','news_tech']
-        # label_list = []
-        # for l in label:
-        #     label_single = str(l).strip().upper().split(',')
-        #     label_list = label_list + label_single
-        # label_set = set(label_list)
-        # len_label_set = len(label_set)
-        # print(len_label_set)
 
-        from keras_textclassification.conf.path_config import path_byte_multi_news_label
-        byte_multi_news_label = txt_read(path_byte_multi_news_label)
-        byte_multi_news_label = [i.strip().upper() for i in byte_multi_news_label]
-        label_set = set(byte_multi_news_label)
-        len_label_set = len(label_set)
-        # 保存标签类标,数字文本转化
-        count = 0
-        label2index = {}
-        index2label = {}
-        for label_one in label_set:
-            label2index[label_one] = count
-            index2label[count] = label_one
-            count = count + 1
-        l2i_i2l = {}
-        l2i_i2l['l2i'] = label2index
-        l2i_i2l['i2l'] = index2label
-        save_json(l2i_i2l, path_fast_text_model_l2i_i2l)
+        if not os.path.exists(path_fast_text_model_l2i_i2l):
+            from keras_textclassification.conf.path_config import path_byte_multi_news_label
+            byte_multi_news_label = txt_read(path_byte_multi_news_label)
+            byte_multi_news_label = [i.strip().upper() for i in byte_multi_news_label]
+
+            label_set = set(byte_multi_news_label)
+            len_label_set = len(label_set)
+            count = 0
+            label2index = {}
+            index2label = {}
+            for label_one in label_set:
+                label2index[label_one] = count
+                index2label[count] = label_one
+                count = count + 1
+
+            l2i_i2l = {}
+            l2i_i2l['l2i'] = label2index
+            l2i_i2l['i2l'] = index2label
+            save_json(l2i_i2l, path_fast_text_model_l2i_i2l)
+        else:
+            l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+            len_label_set = len(l2i_i2l['l2i'])
 
 
         x = []
