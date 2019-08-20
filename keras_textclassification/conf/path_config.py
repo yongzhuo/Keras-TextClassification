@@ -30,8 +30,8 @@ path_byte_multi_news_label = path_root + '/data/byte_multi_news/labels.csv'
 # 模型目录
 path_model_dir =  path_root + "/data/model/fast_text/"
 # 语料地址
-path_model = path_root + '/data/model/fast_text/model_fast_text.f5'
+path_model = path_root + '/data/model/fast_text/model_fast_text.h5'
 # 超参数保存地址
 path_hyper_parameters =  path_root + '/data/model/fast_text/hyper_parameters.json'
 # embedding微调保存地址
-path_fineture = path_root + "/data/model/fast_text/embedding_trainable.f5"
+path_fineture = path_root + "/data/model/fast_text/embedding_trainable.h5"
