@@ -92,7 +92,7 @@ def train(hyper_parameters=None, rate=1.0):
 
 if __name__ == "__main__":
     train(rate=0.001)  # sample条件下设为1,否则训练语料可能会很少
-    # 注意: 4G的080Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
+    # 注意: 4G的1050Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
     # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
     # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
     # 参数较多,不适合用bert,会比较慢和OOM

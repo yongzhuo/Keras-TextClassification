@@ -57,21 +57,6 @@ if __name__ == "__main__":
 #     python setup.py install
 
 # python setup.py bdist_wheel --universal
-#
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# twine upload dist/*
 
 # pip uninstall Keras-TextClassification
