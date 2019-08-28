@@ -191,7 +191,7 @@ class PreprocessText:
             indexs = [ids for ids in range(len(label))]
             random.shuffle(indexs)
             ques, label = ques[indexs].tolist(), label[indexs].tolist()
-
+        # 如果label2index存在则不转换了
         if not os.path.exists(path_fast_text_model_l2i_i2l):
             label_set = set(label)
             count = 0
@@ -223,6 +223,7 @@ class PreprocessText:
             label_zeros[l2i_i2l['l2i'][label_one]] = 1
             label_zo.append(label_zeros)
 
+        count = 0
         if embedding_type == 'bert':
             x_, y_ = np.array(x), np.array(label_zo)
             x_1 = np.array([x[0] for x in x_])
@@ -230,6 +231,10 @@ class PreprocessText:
             x_all = [x_1, x_2]
             return x_all, y_
         elif embedding_type == 'xlnet':
+            count += 1
+            if count == 1:
+                x_0 = x[0]
+                print(x[0][0][0])
             x_, y_ = x, np.array(label_zo)
             x_1 = np.array([x[0][0] for x in x_])
             x_2 = np.array([x[1][0] for x in x_])
@@ -361,6 +366,7 @@ class PreprocessTextMulti:
             label_multi_list.append(label_multi)
 
         print('label_multi_list ok!')
+        count = 0
         if embedding_type == 'bert':
             x_, y_ = np.array(x), np.array(label_multi_list)
             x_1 = np.array([x[0] for x in x_])
@@ -368,6 +374,10 @@ class PreprocessTextMulti:
             x_all = [x_1, x_2]
             return x_all, y_
         elif embedding_type == 'xlnet':
+            count += 1
+            if count == 1:
+                x_0 = x[0]
+                print(x[0][0][0])
             x_, y_ = x, np.array(label_multi_list)
             x_1 = np.array([x[0][0] for x in x_])
             x_2 = np.array([x[1][0] for x in x_])

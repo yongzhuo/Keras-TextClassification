@@ -204,7 +204,7 @@ class BertEmbedding(BaseEmbedding):
                                                               trainable=self.trainable)
         print('load bert model end!')
         # bert model all layers
-        layer_dict = [7]
+        layer_dict = [6]
         layer_0 = 7
         for i in range(12):
             layer_0 = layer_0 + 8
@@ -265,7 +265,7 @@ class XlnetEmbedding(BaseEmbedding):
     def __init__(self, hyper_parameters):
         self.layer_indexes = hyper_parameters['embedding'].get('layer_indexes', [24])
         self.xlnet_embed = hyper_parameters['embedding'].get('xlnet_embed', {})
-        self.batch_size = hyper_parameters['model'].get('batch_size', 1)
+        self.batch_size = hyper_parameters['model'].get('batch_size', 2)
         super().__init__(hyper_parameters)
 
     def build(self):
@@ -280,7 +280,7 @@ class XlnetEmbedding(BaseEmbedding):
         self.attention_type = self.xlnet_embed.get('attention_type', 'bi')  # or 'uni'
         self.attention_type = ATTENTION_TYPE_BI if self.attention_type == 'bi' else ATTENTION_TYPE_UNI
         self.memory_len =  self.xlnet_embed.get('memory_len', 0)
-        self.target_len = self.xlnet_embed.get('target_len', 32)
+        self.target_len = self.xlnet_embed.get('target_len', 5)
         print('load xlnet model start!')
         # 模型加载
         model = load_trained_model_from_checkpoint(checkpoint_path=self.checkpoint_path,
@@ -314,13 +314,13 @@ class XlnetEmbedding(BaseEmbedding):
             if self.layer_indexes[0] in [i + 1 for i in range(len_couche + 1)]:
                 encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0]]).output
             else:
-                encoder_layer = model.get_layer(index=layer_dict[-2]).output
+                encoder_layer = model.get_layer(index=layer_dict[-1]).output
         # 否则遍历需要取的层，把所有层的weight取出来并加起来shape:768*层数
         else:
             # layer_indexes must be [0, 1, 2,3,......24]
             all_layers = [model.get_layer(index=layer_dict[lay]).output
                           if lay in [i + 1 for i in range(len_couche + 1)]
-                          else model.get_layer(index=layer_dict[-2]).output  # 如果给出不正确，就默认输出倒数第二层
+                          else model.get_layer(index=layer_dict[-1]).output  # 如果给出不正确，就默认输出倒数第一层
                           for lay in self.layer_indexes]
             print(self.layer_indexes)
             print(all_layers)
@@ -347,4 +347,3 @@ class XlnetEmbedding(BaseEmbedding):
         segment_input = np.zeros_like(token_input)
         memory_length_input = np.zeros((1, 1))
         return [token_input, segment_input, memory_length_input]
-

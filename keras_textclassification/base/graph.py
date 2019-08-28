@@ -51,6 +51,7 @@ class graph:
             import tensorflow as tf
             config = tf.ConfigProto()
             config.gpu_options.per_process_gpu_memory_fraction = self.gpu_memory_fraction
+            # config.gpu_options.allow_growth = True
             sess = tf.Session(config=config)
             K.set_session(sess)
         self.create_model(hyper_parameters)

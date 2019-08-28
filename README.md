@@ -90,6 +90,8 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
 * HAN: [Hierarchical Attention Networks for Document Classification](https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
 * CapsuleNet: [Dynamic Routing Between Capsules](https://arxiv.org/pdf/1710.09829.pdf)
 * Transformer(encode or decode): [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+* Bert:                  [BERT:Pre-trainingofDeepBidirectionalTransformersfor LanguageUnderstanding]()
+* Xlnet:                 [XLNet: Generalized Autoregressive Pretraining for Language Understanding](https://arxiv.org/abs/1906.08237)
 
 # 参考/感谢
 * 文本分类项目:   [https://github.com/mosu027/TextClassification](https://github.com/mosu027/TextClassification)

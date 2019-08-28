@@ -36,6 +36,7 @@ class XlnetGraph(graph):
         """
         super().create_model(hyper_parameters)
         embedding_output = self.word_embedding.output
+        x = embedding_output
         # x = Lambda(lambda x : x[:, 0:1, :])(embedding_output) # 获取CLS
         # # text cnn
         # bert_output_emmbed = SpatialDropout1D(rate=self.dropout)(embedding_output)
@@ -52,7 +53,7 @@ class XlnetGraph(graph):
         #     concat_out.append(x)
         # x = Concatenate(axis=1)(concat_out)
         # x = Dropout(self.dropout)(x)
-        x = Flatten()(embedding_output)
+        x = Flatten()(x)
         # 最后就是softmax
         dense_layer = Dense(self.label, activation=self.activate_classify)(x)
         output_layers = [dense_layer]
