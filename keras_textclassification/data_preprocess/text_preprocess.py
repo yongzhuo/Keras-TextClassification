@@ -11,12 +11,12 @@ path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
 
 import pandas as pd
 import numpy as np
+import logging
 import random
 import jieba
 import json
 import re
 import os
-
 
 
 def txt_read(file_path, encode_type='utf-8'):
@@ -185,6 +185,12 @@ class PreprocessText:
         label = data['label'].tolist()
         ques = [str(q).upper() for q in ques]
         label = [str(l).upper() for l in label]
+        if shuffle:
+            ques = np.array(ques)
+            label = np.array(label)
+            indexs = [ids for ids in range(len(label))]
+            random.shuffle(indexs)
+            ques, label = ques[indexs].tolist(), label[indexs].tolist()
 
         if not os.path.exists(path_fast_text_model_l2i_i2l):
             label_set = set(label)
@@ -219,20 +225,19 @@ class PreprocessText:
 
         if embedding_type == 'bert':
             x_, y_ = np.array(x), np.array(label_zo)
-            if shuffle:
-                indexs = [ids for ids in range(len(y_))]
-                random.shuffle(indexs)
-                x_, y_ = x_[indexs], y_[indexs]
             x_1 = np.array([x[0] for x in x_])
             x_2 = np.array([x[1] for x in x_])
             x_all = [x_1, x_2]
             return x_all, y_
+        elif embedding_type == 'xlnet':
+            x_, y_ = x, np.array(label_zo)
+            x_1 = np.array([x[0][0] for x in x_])
+            x_2 = np.array([x[1][0] for x in x_])
+            x_3 = np.array([x[2][0] for x in x_])
+            x_all = [x_1, x_2, x_3]
+            return x_all, y_
         else:
             x_, y_ = np.array(x), np.array(label_zo)
-            if shuffle:
-                indexs = [ids for ids in range(len(y_))]
-                random.shuffle(indexs)
-                x_, y_ = x_[indexs], y_[indexs]
             return x_, y_
 
 
@@ -307,6 +312,12 @@ class PreprocessTextMulti:
 
         ques = [str(q).strip().upper() for q in ques]
 
+        if shuffle:
+            ques = np.array(ques)
+            label = np.array(label)
+            indexs = [ids for ids in range(len(label))]
+            random.shuffle(indexs)
+            ques, label = ques[indexs].tolist(), label[indexs].tolist()
 
         if not os.path.exists(path_fast_text_model_l2i_i2l):
             from keras_textclassification.conf.path_config import path_byte_multi_news_label
@@ -352,19 +363,17 @@ class PreprocessTextMulti:
         print('label_multi_list ok!')
         if embedding_type == 'bert':
             x_, y_ = np.array(x), np.array(label_multi_list)
-            if shuffle:
-                indexs = [ids for ids in range(len(y_))]
-                random.shuffle(indexs)
-                x_, y_ = x_[indexs], y_[indexs]
             x_1 = np.array([x[0] for x in x_])
             x_2 = np.array([x[1] for x in x_])
             x_all = [x_1, x_2]
             return x_all, y_
+        elif embedding_type == 'xlnet':
+            x_, y_ = x, np.array(label_multi_list)
+            x_1 = np.array([x[0][0] for x in x_])
+            x_2 = np.array([x[1][0] for x in x_])
+            x_3 = np.array([x[2][0] for x in x_])
+            x_all = [x_1, x_2, x_3]
+            return x_all, y_
         else:
             x_, y_ = np.array(x), np.array(label_multi_list)
-            if shuffle:
-                indexs = [ids for ids in range(len(y_))]
-                random.shuffle(indexs)
-                x_, y_ = x_[indexs], y_[indexs]
             return x_, y_
-

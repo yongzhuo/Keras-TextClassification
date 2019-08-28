@@ -47,8 +47,8 @@ setup(name=NAME,
 if __name__ == "__main__":
     print("setup ok!")
 
-# 说明，项目工程目录这里nlp_xiaojiang，实际上，下边还要有一层nlp_xiangjiang，也就是说，nlp_xiangjiang和setup同一层
-# Data包里必须要有__init__.py，否则文件不会生成
+# 说明，项目工程目录这里Keras-TextClassification，实际上，下边还要有一层keras_textclassification，也就是说，keras_textclassification和setup同一层
+# data包里必须要有__init__.py，否则文件不会生成, .py文件才能copy
 
 # step:
 #     打开cmd
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 #     python setup.py build
 #     python setup.py install
 
+# or
+
 # python setup.py bdist_wheel --universal
 # twine upload dist/*
-
-# pip uninstall Keras-TextClassification

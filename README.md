@@ -13,6 +13,7 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
 ```
 
 # keras_textclassification（代码主体,未完待续...）
+    - Xlnet-fineture
     - Bert-fineture
     - FastText
     - TextCNN
@@ -60,6 +61,7 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
        - chinese_L-12_H-768_A-12/(取谷歌预训练好点的模型,已经压缩上传,
                                   keras-bert还可以加载百度版ernie(需转换，[https://github.com/ArthurRizar/tensorflow_ernie](https://github.com/ArthurRizar/tensorflow_ernie)),
                                   哈工大版bert-wwm(tf框架，[https://github.com/ymcui/Chinese-BERT-wwm](https://github.com/ymcui/Chinese-BERT-wwm))
+       - chinese_xlnet_mid_L-24_H-768_A-12/(哈工大预训练的中文xlnet模型[https://github.com/ymcui/Chinese-PreTrained-XLNet],24层)
        - term_char.txt(已经上传, 项目中已全, wiki字典, 还可以用新华字典什么的)
        - term_word.txt(未上传, 项目中只有部分, 可参考词向量的)
        - w2v_model_merge_short.vec(未上传, 项目中只有部分, 词向量, 可以用自己的)
@@ -143,7 +145,7 @@ def train(hyper_parameters=None, rate=1.0):
         'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
         'trainable': True,  # embedding是静态的还是动态的, 即控制可不可以微调
         'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
-        'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'random'、 'bert' or 'word2vec"
+        'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert' or 'word2vec"
         'gpu_memory_fraction': 0.66, #gpu使用率
         'model': {'label': 3,  # 类别数
                   'batch_size': 5,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大

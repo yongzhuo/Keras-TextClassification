@@ -22,7 +22,7 @@ class graph:
         self.len_max = hyper_parameters.get('len_max', 50)           # 文本最大长度
         self.embed_size = hyper_parameters.get('embed_size', 300)  # 嵌入层尺寸
         self.trainable = hyper_parameters.get('trainable', False)  # 是否微调, 例如静态词向量、动态词向量、微调bert层等, random也可以
-        self.embedding_type = hyper_parameters.get('embedding_type', 'word2vec')  # 词嵌入方式，可以选择'bert'、'gpt-2'、'word2vec'或者'None'
+        self.embedding_type = hyper_parameters.get('embedding_type', 'word2vec')  # 词嵌入方式，可以选择'xlnet'、'bert'、'gpt-2'、'word2vec'或者'None'
         self.gpu_memory_fraction = hyper_parameters.get('gpu_memory_fraction', None) # gpu使用率, 默认不配置
         self.hyper_parameters = hyper_parameters
         hyper_parameters_model = hyper_parameters['model']
@@ -68,14 +68,14 @@ class graph:
         Embeddings = None
         if self.embedding_type == 'random':
             from keras_textclassification.base.embedding import RandomEmbedding as Embeddings
-        elif self.embedding_type == 'char':
-            from keras_textclassification.base.embedding import CharEmbedding3 as Embeddings
         elif self.embedding_type == 'bert':
             from keras_textclassification.base.embedding import BertEmbedding as Embeddings
+        elif self.embedding_type == 'xlnet':
+            from keras_textclassification.base.embedding import XlnetEmbedding as Embeddings
         elif self.embedding_type == 'word2vec':
             from keras_textclassification.base.embedding import WordEmbedding as Embeddings
         else:
-            raise RuntimeError("your input embedding_type is wrong, it must be 'random'、 'bert' or 'word2vec")
+            raise RuntimeError("your input embedding_type is wrong, it must be 'xlnet'、'random'、 'bert' or 'word2vec")
         # 构建网络层
         self.word_embedding = Embeddings(hyper_parameters=hyper_parameters)
         if os.path.exists(self.path_fineture) and self.trainable:
@@ -140,7 +140,7 @@ class graph:
         :param sen: 
         :return: 
         """
-        if self.embedding_type=='bert':
+        if self.embedding_type=='bert' or self.embedding_type=='xlnet':
             if type(sen) == np.ndarray:
                 sen = sen.tolist()
             elif type(sen) == list:

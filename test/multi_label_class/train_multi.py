@@ -31,7 +31,7 @@ def train(hyper_parameters=None, rate=1.0):
         'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
         'trainable': True,  # embedding是静态的还是动态的, 即控制可不可以微调
         'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
-        'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'random'、 'bert' or 'word2vec"
+        'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert' or 'word2vec"
         'gpu_memory_fraction': 0.66, #gpu使用率
         'model': {'label': 1070,  # 类别数
                   'batch_size': 32,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
