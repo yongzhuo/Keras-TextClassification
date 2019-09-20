@@ -42,6 +42,7 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
     - multi_multi_class/目录下以text-cnn为例进行多标签分类实例，转化为multi-onehot标签类别，分类则取一定阀值的类
     - predict_bert_text_cnn.py
     - tet_char_bert_embedding.py
+    - tet_char_xlnet_embedding.py
     - tet_char_random_embedding.py
     - tet_char_word2vec_embedding.py
     - tet_word_random_embedding.py
