@@ -5,13 +5,15 @@
 # @function :setup of Keras-TextClassification
 # @codes    :copy reference from https://github.com/TianWenQAQ/Kashgari/blob/master/setup.py
 
+
 from setuptools import find_packages, setup
 import pathlib
 import codecs
 
+
 # Package meta-data.
 NAME = 'Keras-TextClassification'
-DESCRIPTION = 'chinese textclassification of keras'
+DESCRIPTION = 'chinese text classification of keras'
 URL = 'https://github.com/yongzhuo/Keras-TextClassification'
 EMAIL = '1903865025@qq.com'
 AUTHOR = 'yongzhuo'
@@ -47,7 +49,8 @@ setup(name=NAME,
 if __name__ == "__main__":
     print("setup ok!")
 
-# 说明，项目工程目录这里Keras-TextClassification，实际上，下边还要有一层keras_textclassification，也就是说，keras_textclassification和setup同一层
+# 说明，tensorflow>=1.12.0 or tensorflow-gpu>=1.12.0
+# 项目工程目录这里Keras-TextClassification，实际上，下边还要有一层keras_textclassification，也就是说，keras_textclassification和setup同一层
 # data包里必须要有__init__.py，否则文件不会生成, .py文件才能copy
 
 # step:

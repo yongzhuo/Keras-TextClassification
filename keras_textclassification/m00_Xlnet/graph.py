@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # !/usr/bin/python
-# @time     :2019/6/13 23:06
+# @time     :2019/8/28 23:06
 # @author   :Mo
 # @function :graph of xlnet fineture, 后面不接什么网络结构, 只有一个激活层
 # @paper    :XLNet: Generalized Autoregressive Pretraining for Language Understanding

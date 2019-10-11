@@ -4,12 +4,13 @@
 # @author   :Mo
 # @function :train of bert-fune with baidu-qa-2019 in question title
 
+
 # 适配linux
 import pathlib
 import sys
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 print(project_path)
 sys.path.append(project_path)

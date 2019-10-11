@@ -55,10 +55,10 @@ class BaseEmbedding:
         else:
             raise RuntimeError("level_type must be 'char' or 'word'")
         # 定义的符号
-        self.ot_dict = {'PAD': 0,
-                        'UNK': 1,
-                        'BOS': 2,
-                        'EOS': 3, }
+        self.ot_dict = {'[PAD]': 0,
+                        '[UNK]': 1,
+                        '[BOS]': 2,
+                        '[EOS]': 3, }
         self.deal_corpus()
         self.build()
 
@@ -80,16 +80,16 @@ class BaseEmbedding:
         text = [text_one for text_one in text]
         len_leave = self.len_max - len(text)
         if len_leave >= 0:
-            text_index = [self.token2idx[text_char] if text_char in self.token2idx else self.token2idx['UNK'] for
-                          text_char in text] + [self.token2idx['PAD'] for i in range(len_leave)]
+            text_index = [self.token2idx[text_char] if text_char in self.token2idx else self.token2idx['[UNK]'] for
+                          text_char in text] + [self.token2idx['[PAD]'] for i in range(len_leave)]
         else:
-            text_index = [self.token2idx[text_char] if text_char in self.token2idx else self.token2idx['UNK'] for
+            text_index = [self.token2idx[text_char] if text_char in self.token2idx else self.token2idx['[UNK]'] for
                           text_char in text[0:self.len_max]]
         return text_index
 
     def idx2sentence(self, idx):
         assert type(idx) == list
-        text_idx = [self.idx2token[id] if id in self.idx2token else self.idx2token['UNK'] for id in idx]
+        text_idx = [self.idx2token[id] if id in self.idx2token else self.idx2token['[UNK]'] for id in idx]
         return "".join(text_idx)
 
 
