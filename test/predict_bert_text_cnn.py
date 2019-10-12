@@ -44,8 +44,8 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     y, x = read_and_process(hyper_parameters['data']['val_data'])
     # 取该数据集的百分之几的语料测试
     len_rate = int(len(y) * rate)
-    x = x[1:len_rate]
-    y = y[1:len_rate]
+    x = x[:len_rate]
+    y = y[:len_rate]
     y_pred = []
     count = 0
     for x_one in x:
@@ -118,7 +118,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
 
 if __name__=="__main__":
     # 测试集预测
-    pred_tet(path_test=path_baidu_qa_2019_valid, rate=0.01) # sample条件下设为1,否则训练语料可能会很少
+    pred_tet(path_test=path_baidu_qa_2019_valid, rate=1) # sample条件下设为1,否则训练语料可能会很少
 
     # 可输入 input 预测
     pred_input()

@@ -8,15 +8,16 @@
 from keras_textclassification.conf.path_config import path_embedding_vector_word2vec_char, path_embedding_vector_word2vec_word
 from keras_textclassification.conf.path_config import path_embedding_random_char, path_embedding_random_word
 from keras_textclassification.conf.path_config import path_embedding_bert, path_embedding_xlnet
+from keras_textclassification.data_preprocess.text_preprocess import extract_chinese
 
 from keras_textclassification.keras_layers.non_mask_layer import NonMaskingLayer
-from gensim.models import KeyedVectors
 from keras.layers import Add, Embedding
+from gensim.models import KeyedVectors
 from keras.models import Input, Model
 
 import numpy as np
-import jieba
 import codecs
+import jieba
 import os
 
 
@@ -70,9 +71,9 @@ class BaseEmbedding:
         self.idx2token = {}
 
     def sentence2idx(self, text):
-        text = str(text)
+        text = extract_chinese(str(text).upper())
         if self.level_type == 'char':
-            text = list(text.replace(' ', '').strip())
+            text = list(text)
         elif self.level_type == 'word':
             text = list(jieba.cut(text, cut_all=False, HMM=True))
         else:
@@ -255,6 +256,7 @@ class BertEmbedding(BaseEmbedding):
         self.tokenizer = keras_bert.Tokenizer(self.token_dict)
 
     def sentence2idx(self, text):
+        text = extract_chinese(str(text).upper())
         input_id, input_type_id = self.tokenizer.encode(first=text, max_len=self.len_max)
         # input_mask = [0 if ids == 0 else 1 for ids in input_id]
         # return input_id, input_type_id, input_mask
@@ -339,6 +341,7 @@ class XlnetEmbedding(BaseEmbedding):
         self.vocab_size = len(self.tokenizer.sp)
 
     def sentence2idx(self, text):
+        text = extract_chinese(str(text).upper())
         tokens = self.tokenizer.encode(text)
         tokens = tokens + [0] * (self.target_len - len(tokens)) \
                                if len(tokens) < self.target_len \
