@@ -85,4 +85,4 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__=="__main__":
-    train(rate=0.01)
+    train(rate=1)

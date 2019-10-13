@@ -117,7 +117,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
 
 if __name__=="__main__":
     # 测试集预测
-    pred_tet(path_test=path_baidu_qa_2019_valid, rate=0.01) # sample条件下设为1,否则训练语料可能会很少
+    pred_tet(path_test=path_baidu_qa_2019_valid, rate=1) # sample条件下设为1,否则训练语料可能会很少
 
     # 可输入 input 预测
     pred_input()

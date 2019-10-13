@@ -97,4 +97,4 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__=="__main__":
-    train(rate=0.01) # sample条件下设为1,否则训练语料可能会很少
+    train(rate=1) # sample条件下设为1,否则训练语料可能会很少
