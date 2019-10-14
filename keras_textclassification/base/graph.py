@@ -78,7 +78,7 @@ class graph:
         elif self.embedding_type == 'word2vec':
             from keras_textclassification.base.embedding import WordEmbedding as Embeddings
         else:
-            raise RuntimeError("your input embedding_type is wrong, it must be 'xlnet'、'random'、 'bert' or 'word2vec")
+            raise RuntimeError("your input embedding_type is wrong, it must be 'xlnet'、'random'、 'bert'、 'albert' or 'word2vec")
         # 构建网络层
         self.word_embedding = Embeddings(hyper_parameters=hyper_parameters)
         if os.path.exists(self.path_fineture) and self.trainable:
