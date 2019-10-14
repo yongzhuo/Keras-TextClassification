@@ -73,6 +73,8 @@ class graph:
             from keras_textclassification.base.embedding import BertEmbedding as Embeddings
         elif self.embedding_type == 'xlnet':
             from keras_textclassification.base.embedding import XlnetEmbedding as Embeddings
+        elif self.embedding_type == 'albert':
+            from keras_textclassification.base.embedding import AlbertEmbedding as Embeddings
         elif self.embedding_type == 'word2vec':
             from keras_textclassification.base.embedding import WordEmbedding as Embeddings
         else:
@@ -141,7 +143,7 @@ class graph:
         :param sen: 
         :return: 
         """
-        if self.embedding_type=='bert' or self.embedding_type=='xlnet':
+        if self.embedding_type in ['bert', 'xlnet', 'albert']:
             if type(sen) == np.ndarray:
                 sen = sen.tolist()
             elif type(sen) == list:

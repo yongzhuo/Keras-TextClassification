@@ -224,7 +224,7 @@ class PreprocessText:
             label_zo.append(label_zeros)
 
         count = 0
-        if embedding_type == 'bert':
+        if embedding_type in  ['bert', 'albert']:
             x_, y_ = np.array(x), np.array(label_zo)
             x_1 = np.array([x[0] for x in x_])
             x_2 = np.array([x[1] for x in x_])
@@ -367,7 +367,7 @@ class PreprocessTextMulti:
 
         print('label_multi_list ok!')
         count = 0
-        if embedding_type == 'bert':
+        if embedding_type in  ['bert', 'albert']:
             x_, y_ = np.array(x), np.array(label_multi_list)
             x_1 = np.array([x[0] for x in x_])
             x_2 = np.array([x[1] for x in x_])

@@ -6,8 +6,8 @@
 
 
 from keras_textclassification.conf.path_config import path_embedding_vector_word2vec_char, path_embedding_vector_word2vec_word
+from keras_textclassification.conf.path_config import path_embedding_bert, path_embedding_xlnet, path_embedding_albert
 from keras_textclassification.conf.path_config import path_embedding_random_char, path_embedding_random_word
-from keras_textclassification.conf.path_config import path_embedding_bert, path_embedding_xlnet
 from keras_textclassification.data_preprocess.text_preprocess import extract_chinese
 
 from keras_textclassification.keras_layers.non_mask_layer import NonMaskingLayer
@@ -40,6 +40,8 @@ class BaseEmbedding:
                 raise RuntimeError("bert level_type is 'char', not 'word'")
             elif self.embedding_type == "xlnet":
                 raise RuntimeError("xlnet level_type is 'char', not 'word'")
+            elif self.embedding_type == "albert":
+                raise RuntimeError("albert level_type is 'char', not 'word'")
             else:
                 raise RuntimeError("embedding_type must be 'random', 'word2vec' or 'bert'")
         elif self.level_type == "char":
@@ -51,6 +53,8 @@ class BaseEmbedding:
                 self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_bert)
             elif self.embedding_type == "xlnet":
                 self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_xlnet)
+            elif self.embedding_type == "albert":
+                self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_albert)
             else:
                 raise RuntimeError("embedding_type must be 'random', 'word2vec' or 'bert'")
         else:
@@ -350,3 +354,71 @@ class XlnetEmbedding(BaseEmbedding):
         segment_input = np.zeros_like(token_input)
         memory_length_input = np.zeros((1, 1))
         return [token_input, segment_input, memory_length_input]
+
+
+class AlbertEmbedding(BaseEmbedding):
+    def __init__(self, hyper_parameters):
+        self.layer_indexes = hyper_parameters['embedding'].get('layer_indexes', [12])
+        super().__init__(hyper_parameters)
+
+    def build(self):
+        from keras_textclassification.keras_layers.albert.albert import load_brightmart_albert_zh_checkpoint
+        import keras_bert
+
+        self.embedding_type = 'albert'
+        dict_path = os.path.join(self.corpus_path, 'vocab.txt')
+        print('load bert model start!')
+        model = load_brightmart_albert_zh_checkpoint(self.corpus_path,
+                                                     training=self.trainable,
+                                                     seq_len=self.len_max)
+        # model_l = model.layers
+        print('load bert model end!')
+        # albert model all layers
+        layer_dict = [8, 13]
+        layer_0 = 13
+        for i in range(10):
+            layer_0 = layer_0 + 2
+            layer_dict.append(layer_0)
+        layer_dict.append(36)
+        print(layer_dict)
+        # 输出它本身
+        if len(self.layer_indexes) == 0:
+            encoder_layer = model.output
+        # 分类如果只有一层，就只取最后那一层的weight；取得不正确，就默认取最后一层
+        elif len(self.layer_indexes) == 1:
+            if self.layer_indexes[0] in [i + 1 for i in range(13)]:
+                encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0] - 1]).output
+            else:
+                encoder_layer = model.get_layer(index=layer_dict[-1]).output
+        # 否则遍历需要取的层，把所有层的weight取出来并拼接起来shape:768*层数
+        else:
+            # layer_indexes must be [1,2,3,......12]
+            # all_layers = [model.get_layer(index=lay).output if lay is not 1 else model.get_layer(index=lay).output[0] for lay in layer_indexes]
+            all_layers = [model.get_layer(index=layer_dict[lay - 1]).output if lay in [i + 1 for i in range(13)]
+                          else model.get_layer(index=layer_dict[-1]).output  # 如果给出不正确，就默认输出最后一层
+                          for lay in self.layer_indexes]
+            all_layers_select = []
+            for all_layers_one in all_layers:
+                all_layers_select.append(all_layers_one)
+            encoder_layer = Add()(all_layers_select)
+        self.output = NonMaskingLayer()(encoder_layer)
+        self.input = model.inputs
+        self.model = Model(self.input, self.output)
+
+        self.embedding_size = self.model.output_shape[-1]
+
+        # reader tokenizer
+        self.token_dict = {}
+        with codecs.open(dict_path, 'r', 'utf8') as reader:
+            for line in reader:
+                token = line.strip()
+                self.token_dict[token] = len(self.token_dict)
+        self.vocab_size = len(self.token_dict)
+        self.tokenizer = keras_bert.Tokenizer(self.token_dict)
+
+    def sentence2idx(self, text):
+        text = extract_chinese(str(text).upper())
+        input_id, input_type_id = self.tokenizer.encode(first=text, max_len=self.len_max)
+        # input_mask = [0 if ids == 0 else 1 for ids in input_id]
+        # return input_id, input_type_id, input_mask
+        return [input_id, input_type_id]

@@ -13,6 +13,7 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
 ```
 
 # keras_textclassification（代码主体,未完待续...）
+    - Albert-fineture
     - Xlnet-fineture
     - Bert-fineture
     - FastText
@@ -42,6 +43,7 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
     - multi_multi_class/目录下以text-cnn为例进行多标签分类实例，转化为multi-onehot标签类别，分类则取一定阀值的类
     - predict_bert_text_cnn.py
     - tet_char_bert_embedding.py
+    - tet_char_bert_embedding.py
     - tet_char_xlnet_embedding.py
     - tet_char_random_embedding.py
     - tet_char_word2vec_embedding.py
@@ -62,13 +64,14 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
        - chinese_L-12_H-768_A-12/(取谷歌预训练好点的模型,已经压缩上传,
                                   keras-bert还可以加载百度版ernie(需转换，[https://github.com/ArthurRizar/tensorflow_ernie](https://github.com/ArthurRizar/tensorflow_ernie)),
                                   哈工大版bert-wwm(tf框架，[https://github.com/ymcui/Chinese-BERT-wwm](https://github.com/ymcui/Chinese-BERT-wwm))
+       - albert_base_zh/(brightmart训练的albert, 地址为https://github.com/brightmart/albert_zh)
        - chinese_xlnet_mid_L-24_H-768_A-12/(哈工大预训练的中文xlnet模型[https://github.com/ymcui/Chinese-PreTrained-XLNet],24层)
        - term_char.txt(已经上传, 项目中已全, wiki字典, 还可以用新华字典什么的)
        - term_word.txt(未上传, 项目中只有部分, 可参考词向量的)
        - w2v_model_merge_short.vec(未上传, 项目中只有部分, 词向量, 可以用自己的)
        - w2v_model_wiki_char.vec(已上传百度网盘, 项目中只有部分, 自己训练的维基百科字向量, 可以用自己的)
     - model
-       - 预训练模型存放地址
+       - fast_text/预训练模型存放地址
 
 # 项目说明
   - 1. 构建了base基类(网络(graph)、向量嵌入(词、字、句子embedding)),后边的具体模型继承它们，代码简单
@@ -91,8 +94,9 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
 * HAN: [Hierarchical Attention Networks for Document Classification](https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
 * CapsuleNet: [Dynamic Routing Between Capsules](https://arxiv.org/pdf/1710.09829.pdf)
 * Transformer(encode or decode): [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
-* Bert:                  [BERT:Pre-trainingofDeepBidirectionalTransformersfor LanguageUnderstanding]()
+* Bert:                  [BERT: Pre-trainingofDeepBidirectionalTransformersfor LanguageUnderstanding]()
 * Xlnet:                 [XLNet: Generalized Autoregressive Pretraining for Language Understanding](https://arxiv.org/abs/1906.08237)
+* Albert:                [ALBERT: A LITE BERT FOR SELF-SUPERVISED LEARNING OF LANGUAGE REPRESENTATIONS](https://arxiv.org/pdf/1909.11942.pdf)
 
 # 参考/感谢
 * 文本分类项目:   [https://github.com/mosu027/TextClassification](https://github.com/mosu027/TextClassification)
@@ -103,6 +107,7 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
 * keras文本分类: [https://github.com/AlexYangLi/TextClassification](https://github.com/AlexYangLi/TextClassification)
 * CapsuleNet模型: [https://github.com/bojone/Capsule](https://github.com/bojone/Capsule)
 * transformer模型: [https://github.com/CyberZHG/keras-transformer](https://github.com/CyberZHG/keras-transformer)
+* keras_albert_model: [https://github.com/TinkerMob/keras_albert_model](https://github.com/TinkerMob/keras_albert_model)
 
 # Train&Usage(调用)
 
