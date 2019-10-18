@@ -9,9 +9,9 @@ from keras_textclassification.conf.path_config import path_model_dir
 path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
 path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
 
+from tqdm import tqdm
 import pandas as pd
 import numpy as np
-import logging
 import random
 import jieba
 import json
@@ -214,11 +214,17 @@ class PreprocessText:
             len_ql = len(ques)
 
         x = []
-        for que in ques[0:len_ql]:
+        print("ques to index start!")
+        ques_len_ql = ques[0:len_ql]
+        for i in tqdm(range(len_ql)):
+            que = ques_len_ql[i]
             que_embed = embed.sentence2idx(que)
             x.append(que_embed) # [[], ]
         label_zo = []
-        for label_one in label[0:len_ql]:
+        print("label to onehot start!")
+        label_len_ql = label[0:len_ql]
+        for j in tqdm(range(len_ql)):
+            label_one = label_len_ql[j]
             label_zeros = [0] * len(l2i_i2l['l2i'])
             label_zeros[l2i_i2l['l2i'][label_one]] = 1
             label_zo.append(label_zeros)
@@ -349,7 +355,9 @@ class PreprocessTextMulti:
 
 
         x = []
-        for que in ques:
+        print("ques to index start!")
+        for i in tqdm(range(len_ql)):
+            que = ques[i]
             que_embed = embed.sentence2idx(que)
             x.append(que_embed)  # [[], ]
 
@@ -358,7 +366,9 @@ class PreprocessTextMulti:
         # 转化为多标签类标
         label_multi_list = []
         count = 0
-        for l in label:
+        print("label to onehot start!")
+        for j in tqdm(range(len_ql)):
+            l = label[j]
             count += 1
             label_single = str(l).strip().upper().split(',')
             label_single_index = [l2i_i2l['l2i'][ls] for ls in label_single]

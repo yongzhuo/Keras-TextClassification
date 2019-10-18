@@ -32,7 +32,7 @@ def train(hyper_parameters=None, rate=1.0):
         'trainable': False,  # embedding是静态的还是动态的, 即控制可不可以微调
         'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
         'embedding_type': 'bert',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
-        'gpu_memory_fraction': 0.86, #gpu使用率
+        'gpu_memory_fraction': 0.76, #gpu使用率
         'model': {'label': 17,  # 类别数
                   'batch_size': 2,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
                   'dropout': 0.5,  # 随机失活, 概率
@@ -82,7 +82,7 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__=="__main__":
-    train(rate=1)
+    train(rate=0.01)
     # 注意: 4G的1050Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
     # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
     # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory

@@ -46,14 +46,10 @@ def build_albert(token_num,
                  attention_activation=None,
                  feed_forward_activation='gelu',
                  training=True,
-                 trainable=None):
-    """
-    code from https://github.com/TinkerMob/keras_albert_model
-    
-    Get ALBERT model.
-
+                 trainable=None,
+                 output_layers=None):
+    """Get ALBERT model.
     See: https://arxiv.org/pdf/1909.11942.pdf
-
     :param token_num: Number of tokens.
     :param pos_num: Maximum position.
     :param seq_len: Maximum length of the input sequence or None.
@@ -71,6 +67,7 @@ def build_albert(token_num,
                      if it is `True`, otherwise the input layers and the last
                      feature extraction layer will be returned.
     :param trainable: Whether the model is trainable.
+    :param output_layers: A list of indices of output layers.
     """
     if attention_activation == 'gelu':
         attention_activation = gelu
@@ -146,6 +143,7 @@ def build_albert(token_num,
     feed_forward_normal = LayerNormalization(name='Feed-Forward-Normal')
 
     transformed = embed_layer
+    transformed_layers = []
     for i in range(transformer_num):
         attention_input = transformed
         transformed = attention_layer(transformed)
@@ -170,6 +168,7 @@ def build_albert(token_num,
             name='Feed-Forward-Add-{}'.format(i + 1),
         )([feed_forward_input, transformed])
         transformed = feed_forward_normal(transformed)
+        transformed_layers.append(transformed)
 
     if training:
         # Build tasks
@@ -205,6 +204,17 @@ def build_albert(token_num,
         for layer in model.layers:
             layer.trainable = _trainable(layer)
         return model
+    if output_layers is not None:
+        if isinstance(output_layers, list):
+            output_layers = [
+                transformed_layers[index] for index in output_layers]
+            output = keras.layers.Concatenate(
+                name='Output',
+            )(output_layers)
+        else:
+            output = transformed_layers[output_layers]
+        model = keras.models.Model(inputs=inputs, outputs=output)
+        return model
     model = keras.models.Model(inputs=inputs, outputs=transformed)
     for layer in model.layers:
         layer.trainable = _trainable(layer)
@@ -212,11 +222,7 @@ def build_albert(token_num,
 
 
 def load_brightmart_albert_zh_checkpoint(checkpoint_path, **kwargs):
-    """
-    code from https://github.com/TinkerMob/keras_albert_model
-    
-    Load checkpoint from https://github.com/brightmart/albert_zh
-
+    """Load checkpoint from https://github.com/brightmart/albert_zh
     :param checkpoint_path: path to checkpoint folder.
     :param kwargs: arguments for albert model.
     :return:
@@ -235,7 +241,7 @@ def load_brightmart_albert_zh_checkpoint(checkpoint_path, **kwargs):
     # 修改部分,必须输入is_training, len_max
     training = kwargs['training']
     # config['max_position_embeddings'] = config['max_position_embeddings'] = kwargs['len_max']
-    _set_if_not_existed('training', False)
+    _set_if_not_existed('training', True)
     _set_if_not_existed('token_num', config['vocab_size'])
     _set_if_not_existed('pos_num', config['max_position_embeddings'])
     _set_if_not_existed('seq_len', config['max_position_embeddings'])
