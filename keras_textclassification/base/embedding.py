@@ -259,9 +259,9 @@ class BertEmbedding(BaseEmbedding):
         self.vocab_size = len(self.token_dict)
         self.tokenizer = keras_bert.Tokenizer(self.token_dict)
 
-    def sentence2idx(self, text):
+    def sentence2idx(self, text, second_text=None):
         text = extract_chinese(str(text).upper())
-        input_id, input_type_id = self.tokenizer.encode(first=text, max_len=self.len_max)
+        input_id, input_type_id = self.tokenizer.encode(first=text, second=second_text, max_len=self.len_max)
         # input_mask = [0 if ids == 0 else 1 for ids in input_id]
         # return input_id, input_type_id, input_mask
         return [input_id, input_type_id]
@@ -422,9 +422,9 @@ class AlbertEmbedding(BaseEmbedding):
         self.vocab_size = len(self.token_dict)
         self.tokenizer = keras_bert.Tokenizer(self.token_dict)
 
-    def sentence2idx(self, text):
+    def sentence2idx(self, text, second_text=None):
         text = extract_chinese(str(text).upper())
-        input_id, input_type_id = self.tokenizer.encode(first=text, max_len=self.len_max)
+        input_id, input_type_id = self.tokenizer.encode(first=text, second=second_text, max_len=self.len_max)
         # input_mask = [0 if ids == 0 else 1 for ids in input_id]
         # return input_id, input_type_id, input_mask
         return [input_id, input_type_id]

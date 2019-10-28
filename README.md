@@ -41,6 +41,7 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
 # run(多标签分类/Embedding/test/sample实例)
     - bert,word2vec,random样例在test/目录下, 注意word2vec(char or word), random-word,  bert(chinese_L-12_H-768_A-12)未全部加载,需要下载
     - multi_multi_class/目录下以text-cnn为例进行多标签分类实例，转化为multi-onehot标签类别，分类则取一定阀值的类
+    - sentence_similarity/目录下以bert为例进行两个句子文本相似度计算,数据格式如data/sim_webank/目录下所示
     - predict_bert_text_cnn.py
     - tet_char_bert_embedding.py
     - tet_char_bert_embedding.py

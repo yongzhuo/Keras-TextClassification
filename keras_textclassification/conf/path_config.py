@@ -28,6 +28,11 @@ path_byte_multi_news_train = path_root + '/data/byte_multi_news/train.csv'
 path_byte_multi_news_valid = path_root + '/data/byte_multi_news/valid.csv'
 path_byte_multi_news_label = path_root + '/data/byte_multi_news/labels.csv'
 
+# classify data of baidu qa 2019
+path_sim_webank_train = path_root + '/data/sim_webank/train.csv'
+path_sim_webank_valid = path_root + '/data/sim_webank/valid.csv'
+path_sim_webank_test = path_root + '/data/sim_webank/test.csv'
+
 # fast_text config
 # 模型目录
 path_model_dir =  path_root + "/data/model/fast_text/"
