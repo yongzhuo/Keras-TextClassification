@@ -377,41 +377,41 @@ class AlbertEmbedding(BaseEmbedding):
         self.input = self.model.inputs
         self.output = self.model.outputs[0]
 
-        # # model_l = model.layers
-        # print('load bert model end!')
-        # # albert model all layers
-        # layer_dict = [8, 13]
-        # layer_0 = 13
-        # for i in range(10):
-        #     layer_0 = layer_0 + 2
-        #     layer_dict.append(layer_0)
-        # layer_dict.append(36)
-        # print(layer_dict)
-        # # 输出它本身
-        # if len(self.layer_indexes) == 0:
-        #     encoder_layer = model.output
-        # # 分类如果只有一层，就只取最后那一层的weight；取得不正确，就默认取最后一层
-        # elif len(self.layer_indexes) == 1:
-        #     if self.layer_indexes[0] in [i + 1 for i in range(13)]:
-        #         encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0] - 1]).output
-        #     else:
-        #         encoder_layer = model.get_layer(index=layer_dict[-1]).output
-        # # 否则遍历需要取的层，把所有层的weight取出来并拼接起来shape:768*层数
-        # else:
-        #     # layer_indexes must be [1,2,3,......12]
-        #     # all_layers = [model.get_layer(index=lay).output if lay is not 1 else model.get_layer(index=lay).output[0] for lay in layer_indexes]
-        #     all_layers = [model.get_layer(index=layer_dict[lay - 1]).output if lay in [i + 1 for i in range(13)]
-        #                   else model.get_layer(index=layer_dict[-1]).output  # 如果给出不正确，就默认输出最后一层
-        #                   for lay in self.layer_indexes]
-        #     all_layers_select = []
-        #     for all_layers_one in all_layers:
-        #         all_layers_select.append(all_layers_one)
-        #     encoder_layer = Add()(all_layers_select)
-        # self.output = NonMaskingLayer()(encoder_layer)
-        # self.input = model.inputs
-        # self.model = Model(self.input, self.output)
+        # model_l = model.layers
+        print('load bert model end!')
+        # albert model all layers
+        layer_dict = [8, 13]
+        layer_0 = 13
+        for i in range(10):
+            layer_0 = layer_0 + 2
+            layer_dict.append(layer_0)
+        layer_dict.append(36)
+        print(layer_dict)
+        # 输出它本身
+        if len(self.layer_indexes) == 0:
+            encoder_layer = self.model.output
+        # 分类如果只有一层，就只取最后那一层的weight；取得不正确，就默认取最后一层
+        elif len(self.layer_indexes) == 1:
+            if self.layer_indexes[0] in [i + 1 for i in range(13)]:
+                encoder_layer = self.model.get_layer(index=layer_dict[self.layer_indexes[0] - 1]).output
+            else:
+                encoder_layer = self.model.get_layer(index=layer_dict[-1]).output
+        # 否则遍历需要取的层，把所有层的weight取出来并拼接起来shape:768*层数
+        else:
+            # layer_indexes must be [1,2,3,......12]
+            # all_layers = [model.get_layer(index=lay).output if lay is not 1 else model.get_layer(index=lay).output[0] for lay in layer_indexes]
+            all_layers = [self.model.get_layer(index=layer_dict[lay - 1]).output if lay in [i + 1 for i in range(13)]
+                          else self.model.get_layer(index=layer_dict[-1]).output  # 如果给出不正确，就默认输出最后一层
+                          for lay in self.layer_indexes]
+            all_layers_select = []
+            for all_layers_one in all_layers:
+                all_layers_select.append(all_layers_one)
+            encoder_layer = Add()(all_layers_select)
+        self.output = NonMaskingLayer()(encoder_layer)
+        self.input = self.model.inputs
+        self.model = Model(self.input, self.output)
 
-        self.embedding_size = self.model.output_shape[-1]
+        # self.embedding_size = self.model.output_shape[-1]
 
         # reader tokenizer
         self.token_dict = {}

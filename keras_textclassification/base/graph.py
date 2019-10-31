@@ -127,6 +127,30 @@ class graph:
         if self.trainable:
             self.word_embedding.model.save(self.path_fineture)
 
+    def fit_generator(self, data_fit_generator, data_dev_generator, steps_per_epoch, validation_steps):
+        """
+        
+        :param data_fit_generator: yield, 训练数据
+        :param data_dev_generator: yield, 验证数据
+        :param steps_per_epoch: int, 训练一轮步数
+        :param validation_steps: int, 验证一轮步数
+        :return: 
+        """
+        # 保存超参数
+        self.hyper_parameters['model']['is_training'] = False  # 预测时候这些设为False
+        self.hyper_parameters['model']['trainable'] = False
+        save_json(jsons=self.hyper_parameters, json_path=self.path_hyper_parameters)
+        # 训练模型
+        self.model.fit_generator(generator=data_fit_generator,
+                                    steps_per_epoch=None,
+                                    epochs=self.epochs,
+                                    callbacks=self.callback(),
+                                    validation_data=data_dev_generator,
+                                    validation_steps=validation_steps)
+        # 保存embedding, 动态的
+        if self.trainable:
+            self.word_embedding.model.save(self.path_fineture)
+
 
     def load_model(self):
         """
