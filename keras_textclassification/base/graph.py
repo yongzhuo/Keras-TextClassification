@@ -4,6 +4,8 @@
 # @author   :Mo
 # @function :graph of base
 
+
+from keras_textclassification.data_preprocess.generator_preprocess import PreprocessGenerator
 from keras_textclassification.data_preprocess.text_preprocess import save_json
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.optimizers import Adam
@@ -127,6 +129,45 @@ class graph:
         if self.trainable:
             self.word_embedding.model.save(self.path_fineture)
 
+    def fit_generator(self, embed, rate=1):
+        """
+
+        :param data_fit_generator: yield, 训练数据
+        :param data_dev_generator: yield, 验证数据
+        :param steps_per_epoch: int, 训练一轮步数
+        :param validation_steps: int, 验证一轮步数
+        :return: 
+        """
+        # 保存超参数
+        self.hyper_parameters['model']['is_training'] = False  # 预测时候这些设为False
+        self.hyper_parameters['model']['trainable'] = False
+        save_json(jsons=self.hyper_parameters, json_path=self.path_hyper_parameters)
+
+        pg = PreprocessGenerator()
+        _, len_train = pg.preprocess_get_label_set(self.hyper_parameters['data']['train_data'])
+        data_fit_generator = pg.preprocess_label_ques_to_idx(embedding_type=self.hyper_parameters['embedding_type'],
+                                                             batch_size=self.batch_size,
+                                                             path=self.hyper_parameters['data']['train_data'],
+                                                             embed=embed,
+                                                             rate=rate)
+        _, len_val = pg.preprocess_get_label_set(self.hyper_parameters['data']['val_data'])
+        data_dev_generator = pg.preprocess_label_ques_to_idx(embedding_type=self.hyper_parameters['embedding_type'],
+                                                             batch_size=self.batch_size,
+                                                             path=self.hyper_parameters['data']['val_data'],
+                                                             embed=embed,
+                                                             rate=rate)
+        steps_per_epoch = len_train // self.batch_size
+        validation_steps = len_val // self.batch_size
+        # 训练模型
+        self.model.fit_generator(generator=data_fit_generator,
+                                 validation_data=data_dev_generator,
+                                 callbacks=self.callback(),
+                                 epochs=self.epochs,
+                                 steps_per_epoch=steps_per_epoch,
+                                 validation_steps=validation_steps)
+        # 保存embedding, 动态的
+        if self.trainable:
+            self.word_embedding.model.save(self.path_fineture)
 
     def load_model(self):
         """

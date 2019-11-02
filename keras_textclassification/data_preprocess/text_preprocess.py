@@ -123,7 +123,7 @@ def save_json(jsons, json_path):
     :return: None
     """
     with open(json_path, 'w', encoding='utf-8') as fj:
-        fj.write(json.dumps(jsons))
+        fj.write(json.dumps(jsons, ensure_ascii=False))
     fj.close()
 
 
@@ -148,7 +148,8 @@ def delete_file(path):
         # 取文件或者目录的绝对路径
         path_children = os.path.join(path, i)
         if os.path.isfile(path_children):
-            os.remove(path_children)
+            if path_children.endswith(".h5") or path_children.endswith(".json"):
+                os.remove(path_children)
         else:# 递归, 删除目录下的所有文件
             delete_file(path_children)
 
