@@ -73,7 +73,7 @@ def extract_chinese(text):
     :param text: str, input of sentence
     :return: 
     """
-    chinese_exttract = ''.join(re.findall(u"([\u4e00-\u9fa5A-Za-z0-9@.])", text))
+    chinese_exttract = ''.join(re.findall(u"([\u4e00-\u9fa5A-Za-z0-9@._])", text))
     return chinese_exttract
 
 

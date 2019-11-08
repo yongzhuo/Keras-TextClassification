@@ -119,7 +119,8 @@ class graph:
         # 保存超参数
         self.hyper_parameters['model']['is_training'] = False # 预测时候这些设为False
         self.hyper_parameters['model']['trainable'] = False
-        self.hyper_parameters['model']['dropout'] = 1
+        self.hyper_parameters['model']['dropout'] = 1.0
+
         save_json(jsons=self.hyper_parameters, json_path=self.path_hyper_parameters)
         # 训练模型
         self.model.fit(x_train, y_train, batch_size=self.batch_size,
@@ -142,7 +143,8 @@ class graph:
         # 保存超参数
         self.hyper_parameters['model']['is_training'] = False  # 预测时候这些设为False
         self.hyper_parameters['model']['trainable'] = False
-        self.hyper_parameters['model']['dropout'] = 1
+        self.hyper_parameters['model']['dropout'] = 1.0
+
         save_json(jsons=self.hyper_parameters, json_path=self.path_hyper_parameters)
 
         pg = PreprocessGenerator()
