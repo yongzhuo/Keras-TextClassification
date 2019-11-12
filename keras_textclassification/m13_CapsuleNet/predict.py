@@ -73,7 +73,14 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     # 评估
     report_predict = classification_report(index_y, index_pred,
                                            target_names=target_names, digits=9)
+
+    count = 0
+    for i in range(len(index_pred)):
+        if index_y[i]==index_pred[i]:
+            count += 1
     print(report_predict)
+    print('accuracy:{}'.format(count/len(index_y)))
+
     print("耗时:" + str(time.time() - time_start))
 
 
@@ -118,29 +125,15 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
 
 if __name__=="__main__":
     # 测试集预测
-    pred_tet(path_test=path_baidu_qa_2019_valid, rate=1) # sample条件下设为1,否则训练语料可能会很少
+    pred_tet(rate=1) # sample条件下设为1,否则训练语料可能会很少
 
     # 可输入 input 预测
     pred_input()
 
+# 92218/92218 [==============================] - 138s 2ms/step - loss: 1.0619 - acc: 0.7534 - val_loss: 3.3621 - val_acc: 0.3412
+# Epoch 00020: val_loss improved from 3.36474 to 3.36213, saving model to D:/workspace/pythonMyCode/django_project/Keras-TextClassification/keras_textclassification/data/model/fast_text/model_fast_text.h5
+# 耗时:2830.3001523017883
 
-#               precision    recall  f1-score   support
-#
-#           电子  0.428571429 0.375000000 0.400000000         8
-#           社会  0.250000000 0.166666667 0.200000000        12
-#           烦恼  0.500000000 0.800000000 0.615384615        20
-#           电脑  0.700000000 0.549019608 0.615384615        51
-#           汽车  0.333333333 0.600000000 0.428571429         5
-#           商业  0.781250000 0.714285714 0.746268657        35
-#           文化  0.000000000 0.000000000 0.000000000         7
-#           健康  0.727272727 0.655737705 0.689655172        61
-#           育儿  0.142857143 0.200000000 0.166666667         5
-#           教育  0.638297872 0.517241379 0.571428571        58
-#           娱乐  0.390243902 0.400000000 0.395061728        40
-#           生活  0.487179487 0.387755102 0.431818182        49
-#           体育  0.666666667 0.400000000 0.500000000         5
-#           游戏  0.658333333 0.858695652 0.745283019        92
-#
-#     accuracy                      0.589285714       448
-#    macro avg  0.478857564 0.473171559 0.464680190       448
-# weighted avg  0.595133343 0.589285714 0.583989557       448
+# 92218/92218 [==============================] - 161s 2ms/step - loss: 0.0449 - acc: 0.9887 - val_loss: 0.7595 - val_acc: 0.8114
+# Epoch 00018: val_loss improved from 0.76525 to 0.75950, saving model to D:/workspace/pythonMyCode/django_project/Keras-TextClassification/keras_textclassification/data/model/fast_text/model_fast_text.h5
+# Epoch 19/20

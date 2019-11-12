@@ -26,12 +26,12 @@ import time
 def train(hyper_parameters=None, rate=1.0):
     if not hyper_parameters:
         hyper_parameters = {
-        'len_max': 2,  # 句子最大长度, 固定推荐20-50, bert越长会越慢, 占用空间也会变大, 小心OOM
+        'len_max': 32,  # 句子最大长度, 固定推荐20-50, bert越长会越慢, 占用空间也会变大, 小心OOM
         'embed_size': 768,  # 字/词向量维度, bert取768, word取300, char可以更小些
         'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
         'trainable': False,  # embedding是静态的还是动态的, 即控制可不可以微调
         'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
-        'embedding_type': 'bert',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
+        'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
         'gpu_memory_fraction': 0.76, #gpu使用率
         'model': {'label': 17,  # 类别数
                   'batch_size': 2,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
@@ -45,6 +45,7 @@ def train(hyper_parameters=None, rate=1.0):
                   'activate_classify': 'softmax',  # 最后一个layer, 即分类激活函数
                   'loss': 'categorical_crossentropy',  # 损失函数
                   'metrics': 'accuracy',  # 保存更好模型的评价标准
+                  'optimizer_name': 'RAdam', # 优化器, 可选['Adam', 'Radam', 'RAdam,Lookahead']
                   'is_training': True,  # 训练后者是测试模型
                   'model_path': path_model,
                   # 模型地址, loss降低则保存的依据, save_best_only=True, save_weights_only=True

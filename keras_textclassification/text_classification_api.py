@@ -76,7 +76,7 @@ def train(graph='TextCNN', label=17, rate=1.0, hyper_parameters=None, path_train
     hyper_parameters_real = {
         'len_max': 50,  # 句子最大长度, 固定 推荐20-50
         'trainable': True,  # embedding是静态的还是动态的
-        'embed_size': 768,  # 字/词向量维度
+        'embed_size': 64,  # 字/词向量维度
         'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
         'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word'
         'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
@@ -160,4 +160,4 @@ def train(graph='TextCNN', label=17, rate=1.0, hyper_parameters=None, path_train
 
 
 if __name__ == "__main__":
-    train(graph='TextCNN', label=17, rate=1, hyper_parameters=None, path_train_data=None, path_dev_data=None)
+    train(graph='TextCNN', label=17, rate=1, path_train_data=None, path_dev_data=None,hyper_parameters=None)

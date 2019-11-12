@@ -7,6 +7,8 @@
 
 from keras_textclassification.data_preprocess.generator_preprocess import PreprocessGenerator
 from keras_textclassification.data_preprocess.text_preprocess import save_json
+from keras_textclassification.keras_layers.keras_lookahead import Lookahead
+from keras_textclassification.keras_layers.keras_radam import RAdam
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.optimizers import Adam
 from keras import backend as K
@@ -48,6 +50,7 @@ class graph:
         self.path_hyper_parameters = hyper_parameters_model.get('path_hyper_parameters', "path_hyper_parameters") # 超参数保存地址
         self.path_fineture = hyper_parameters_model.get('path_fineture', "path_fineture") # embedding层保存地址, 例如静态词向量、动态词向量、微调bert层等
         self.patience = hyper_parameters_model.get('patience', 3) # 早停, 2-3就可以了
+        self.optimizer_name = hyper_parameters_model.get('optimizer_name', 'RAdam,Lookahead') # 早停, 2-3就可以了
         if self.gpu_memory_fraction:
             # keras, tensorflow控制GPU使用率等
             import tensorflow as tf
@@ -103,9 +106,20 @@ class graph:
           构建优化器、损失函数和评价函数
         :return: 
         """
-        self.model.compile(optimizer=Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
-                           loss=self.loss,
-                           metrics=[self.metrics])
+        if self.optimizer_name.upper() == "ADAM":
+            self.model.compile(optimizer=Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
+                               loss=self.loss,
+                               metrics=[self.metrics]) # Any optimize
+        elif self.optimizer_name.upper() == "RADAM":
+            self.model.compile(optimizer=RAdam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
+                               loss=self.loss,
+                               metrics=[self.metrics]) # Any optimize
+        else:
+            self.model.compile(optimizer=RAdam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
+                               loss=self.loss,
+                               metrics=[self.metrics]) # Any optimize
+            lookahead = Lookahead(k=5, alpha=0.5)  # Initialize Lookahead
+            lookahead.inject(self.model)  # add into model
 
     def fit(self, x_train, y_train, x_dev, y_dev):
         """

@@ -73,6 +73,11 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     # 评估
     report_predict = classification_report(index_y, index_pred,
                                            target_names=target_names, digits=9)
+    count = 0
+    for i in range(len(index_pred)):
+        if index_y[i] == index_pred[i]:
+            count += 1
+    print(count)
     print(report_predict)
     print("耗时:" + str(time.time() - time_start))
 
@@ -123,4 +128,7 @@ if __name__=="__main__":
     # 可输入 input 预测
     pred_input()
 
-
+# 180/180 [==============================] - 56s 313ms/step - loss: 0.0696 - acc: 0.9784 - val_loss: 0.8469 - val_acc: 0.8155
+#
+# Epoch 00016: val_loss improved from 0.85291 to 0.84695, saving model to D:/workspace/pythonMyCode/django_project/Keras-TextClassification/keras_textclassification/data/model/fast_text/model_fast_text.h5
+# Epoch 17/20
