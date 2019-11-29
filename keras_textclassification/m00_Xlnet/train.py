@@ -5,14 +5,16 @@
 # @function :train of bert-fune with baidu-qa-2019 in question title
 
 
+# 使用cpu
+import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 # 适配linux
 import pathlib
 import sys
 import os
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
-print(project_path)
 sys.path.append(project_path)
 # 地址
 from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
@@ -63,7 +65,7 @@ def train(hyper_parameters=None, rate=1.0):
                   'path_hyper_parameters': path_hyper_parameters,  # 模型(包括embedding)，超参数地址,
                   'path_fineture': path_fineture,  # 保存embedding trainable地址, 例如字向量、词向量、bert向量等
                   },
-        'embedding': {'layer_indexes': [0, 1, 24], # bert/xlnet取的层数,包括embedding层0，其他是正常的层
+        'embedding': {'layer_indexes': [], # [i for i in range(25)], 暂时只支持默认输出,即选择'[]', # bert/xlnet取的层数,包括embedding层0，其他是正常的层
                       # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
                       'xlnet_embed':{'attention_type': 'bi',  # or 'uni'
                                      'memory_len': 0,
@@ -97,18 +99,6 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__=="__main__":
-    train(rate=1) # sample条件下设为1,否则训练语料可能会很少
-    # 注意: 4G的1050Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
-    # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
-    # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
-
-# bert, char, True, train
-# 1425/1425 [==============================] - 19s 13ms/step - loss: 0.6402 - acc: 0.8112 - val_loss: 0.9332 - val_acc: 0.7045
-# Epoch 00002: val_loss improved from 1.26402 to 0.93323, saving model
-# Epoch 3/20
-
-
-# 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm), keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
-
+    train(rate=1)
 
 

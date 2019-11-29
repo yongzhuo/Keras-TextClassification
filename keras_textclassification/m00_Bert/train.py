@@ -4,6 +4,11 @@
 # @author   :Mo
 # @function :train of bert-fune with baidu-qa-2019 in question title
 
+
+# # 使用cpu
+# import os
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 # 适配linux
 import pathlib
 import sys

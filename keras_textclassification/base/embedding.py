@@ -307,17 +307,18 @@ class XlnetEmbedding(BaseEmbedding):
         # 一共246个layer
         # 每层10个layer（MultiHeadAttention,Dropout,Add,LayerNormalization）,第一是9个layer的输入和embedding层
         # 一共24层
-        layer_dict = [5]
+        layer_dict = []
         layer_0 = 6
         for i in range(len_couche):
             layer_0 = layer_0 + 10
-            layer_dict.append(layer_0 - 2)
+            layer_dict.append(layer_0 - 1)
+        layer_dict.append(248)
         # 输出它本身
         if len(self.layer_indexes) == 0:
             encoder_layer = model.output
         # 分类如果只有一层，取得不正确的话就取倒数第二层
         elif len(self.layer_indexes) == 1:
-            if self.layer_indexes[0] in [i + 1 for i in range(len_couche + 1)]:
+            if self.layer_indexes[0] in [i for i in range(len_couche + 1)]:
                 encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0]]).output
             else:
                 encoder_layer = model.get_layer(index=layer_dict[-1]).output
@@ -325,7 +326,7 @@ class XlnetEmbedding(BaseEmbedding):
         else:
             # layer_indexes must be [0, 1, 2,3,......24]
             all_layers = [model.get_layer(index=layer_dict[lay]).output
-                          if lay in [i + 1 for i in range(len_couche + 1)]
+                          if lay in [i for i in range(len_couche + 1)]
                           else model.get_layer(index=layer_dict[-1]).output  # 如果给出不正确，就默认输出倒数第一层
                           for lay in self.layer_indexes]
             print(self.layer_indexes)
@@ -337,7 +338,7 @@ class XlnetEmbedding(BaseEmbedding):
             print(encoder_layer.shape)
         self.output = NonMaskingLayer()(encoder_layer)
         self.input = model.inputs
-        self.model = Model(model.inputs, self.output)
+        self.model = Model(self.input, self.output)
         print("load KerasXlnetEmbedding end")
         model.summary(132)
 
@@ -352,8 +353,14 @@ class XlnetEmbedding(BaseEmbedding):
                                else tokens[0:self.target_len]
         token_input = np.expand_dims(np.array(tokens), axis=0)
         segment_input = np.zeros_like(token_input)
-        memory_length_input = np.zeros((1, 1))
-        return [token_input, segment_input, memory_length_input]
+        memory_length_input = np.zeros((1, 1)) # np.array([[self.memory_len]]) # np.zeros((1, 1))
+        masks = [1] * len(tokens) + ([0] * (self.target_len - len(tokens))
+                                                   if len(tokens) < self.target_len else [])
+        mask_input = np.expand_dims(np.array(masks), axis=0)
+        if self.trainable:
+            return [token_input, segment_input, memory_length_input, mask_input]
+        else:
+            return [token_input, segment_input, memory_length_input]
 
 
 class AlbertEmbedding(BaseEmbedding):
@@ -428,4 +435,6 @@ class AlbertEmbedding(BaseEmbedding):
         # input_mask = [0 if ids == 0 else 1 for ids in input_id]
         # return input_id, input_type_id, input_mask
         return [input_id, input_type_id]
+
+
 

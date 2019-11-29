@@ -1,4 +1,13 @@
-# Keras-TextClassification
+# [Keras-TextClassification](https://github.com/yongzhuo/Keras-TextClassification)
+
+[![PyPI](https://img.shields.io/pypi/v/Keras-TextClassification)](https://pypi.org/project/Keras-TextClassification/)
+[![Build Status](https://travis-ci.com/yongzhuo/Keras-TextClassification.svg?branch=master)](https://travis-ci.com/yongzhuo/Keras-TextClassification)
+[![PyPI_downloads](https://img.shields.io/pypi/dm/Keras-TextClassification)](https://pypi.org/project/Keras-TextClassification/)
+[![Stars](https://img.shields.io/github/stars/yongzhuo/Keras-TextClassification?style=social)](https://github.com/yongzhuo/Keras-TextClassification/stargazers)
+[![Forks](https://img.shields.io/github/forks/yongzhuo/Keras-TextClassification.svg?style=social)](https://github.com/yongzhuo/Keras-TextClassification/network/members)
+[![Join the chat at https://gitter.im/yongzhuo/Keras-TextClassification](https://badges.gitter.im/yongzhuo/Keras-TextClassification.svg)](https://gitter.im/yongzhuo/Keras-TextClassification?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+
 
 # Install(安装)
 
