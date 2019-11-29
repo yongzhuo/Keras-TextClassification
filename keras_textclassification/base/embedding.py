@@ -11,9 +11,10 @@ from keras_textclassification.conf.path_config import path_embedding_random_char
 from keras_textclassification.data_preprocess.text_preprocess import extract_chinese
 
 from keras_textclassification.keras_layers.non_mask_layer import NonMaskingLayer
-from keras.layers import Add, Embedding
+from keras.layers import Add, Embedding, Lambda
 from gensim.models import KeyedVectors
 from keras.models import Input, Model
+import keras.backend as K
 
 import numpy as np
 import codecs
@@ -314,12 +315,12 @@ class XlnetEmbedding(BaseEmbedding):
         # 一共246个layer
         # 每层10个layer（MultiHeadAttention,Dropout,Add,LayerNormalization）,第一是9个layer的输入和embedding层
         # 一共24层
-        layer_dict = [10]
-        layer_0 = 3
+        layer_dict = []
+        layer_0 = 7
         for i in range(len_couche):
             layer_0 = layer_0 + 10
             layer_dict.append(layer_0)
-        layer_dict.append(245)
+        layer_dict.append(247)
         # 测试 get_output_at
         # def get_number(index):
         #     try:
@@ -338,15 +339,15 @@ class XlnetEmbedding(BaseEmbedding):
         # 分类如果只有一层，取得不正确的话就取倒数第二层
         elif len(self.layer_indexes) == 1:
             if self.layer_indexes[0] in layer_real:
-                encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0]]).output
+                encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0]]).get_output_at(node_index=0)
             else:
-                encoder_layer = model.get_layer(index=layer_dict[-1]).output
+                encoder_layer = model.get_layer(index=layer_dict[-1]).get_output_at(node_index=0)
         # 否则遍历需要取的层，把所有层的weight取出来并加起来shape:768*层数
         else:
             # layer_indexes must be [0, 1, 2,3,......24]
-            all_layers = [model.get_layer(index=layer_dict[lay]).output
+            all_layers = [model.get_layer(index=layer_dict[lay]).get_output_at(node_index=0)
                           if lay in layer_real
-                          else model.get_layer(index=layer_dict[-1]).output  # 如果给出不正确，就默认输出倒数第一层
+                          else model.get_layer(index=layer_dict[-1]).get_output_at(node_index=0)  # 如果给出不正确，就默认输出倒数第一层
                           for lay in self.layer_indexes]
             print(self.layer_indexes)
             print(all_layers)
@@ -355,6 +356,12 @@ class XlnetEmbedding(BaseEmbedding):
                 all_layers_select.append(all_layers_one)
             encoder_layer = Add()(all_layers_select)
             print(encoder_layer.shape)
+
+            # def xlnet_concat(x):
+            #     x_concat = K.concatenate(x, axis=1)
+            #     return x_concat
+            # encoder_layer = Lambda(xlnet_concat, name='xlnet_concat')(all_layers)
+
         self.output = NonMaskingLayer()(encoder_layer)
         self.input = model.inputs
         self.model = Model(self.input, self.output)
@@ -455,6 +462,4 @@ class AlbertEmbedding(BaseEmbedding):
         # input_mask = [0 if ids == 0 else 1 for ids in input_id]
         # return input_id, input_type_id, input_mask
         return [input_id, input_type_id]
-
-
 

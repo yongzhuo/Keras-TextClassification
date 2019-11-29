@@ -5,6 +5,11 @@
 # @function :train of textcnn-char-bert with baidu-qa-2019 in question title
 
 
+# # 使用cpu
+# import os
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 # 适配linux
 import pathlib
 import sys
@@ -34,7 +39,7 @@ def train(hyper_parameters=None, rate=1.0):
         'embedding_type': 'xlnet',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
         'gpu_memory_fraction': 0.66, #gpu使用率
         'model': {'label': 17,  # 类别数
-                  'batch_size': 32,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
+                  'batch_size': 2,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
                   'dropout': 0.5,  # 随机失活, 概率
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                   'decay_rate': 0.9,  # 学习率衰减系数, 乘法
@@ -51,7 +56,7 @@ def train(hyper_parameters=None, rate=1.0):
                   'path_hyper_parameters': path_hyper_parameters,  # 模型(包括embedding)，超参数地址,
                   'path_fineture': path_fineture,  # 保存embedding trainable地址, 例如字向量、词向量、bert向量等
                   },
-        'embedding': {'layer_indexes': [12], # bert取的层数
+        'embedding': {'layer_indexes': [i for i in range(24)], # bert取的层数
                       # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
                       'xlnet_embed':{'attention_type': 'bi',  # or 'uni'
                                      'memory_len': 0,

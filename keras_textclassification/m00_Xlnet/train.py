@@ -5,10 +5,10 @@
 # @function :train of bert-fune with baidu-qa-2019 in question title
 
 
-# 使用cpu
-import os
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# # 使用cpu
+# import os
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 # 适配linux
 import pathlib
@@ -40,7 +40,7 @@ def train(hyper_parameters=None, rate=1.0):
         'len_max': 32,  # 句子最大长度, 固定 推荐20-50
         'embed_size': 768,  # 字/词向量维度
         'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
-        'trainable': False,  # 暂不支持微调True, embedding是静态的还是动态的, 即控制可不可以微调
+        'trainable': True,  # 暂不支持微调True, embedding是静态的还是动态的, 即控制可不可以微调
         'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word'
         'embedding_type': 'xlnet',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
         'gpu_memory_fraction': 0.76, #gpu使用率
