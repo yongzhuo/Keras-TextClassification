@@ -26,16 +26,16 @@ import time
 def train(hyper_parameters=None, rate=1.0):
     if not hyper_parameters:
         hyper_parameters = {
-        'len_max': 50,  # 句子最大长度, 固定推荐20-50, bert越长会越慢, 占用空间也会变大, 本地win10-4G设为20就好, 过大小心OOM
-        'embed_size': 768,  # 字/词向量维度, bert取768, word取300, char可以更小些
+        'len_max': 55,  # 句子最大长度, 固定推荐20-50, bert越长会越慢, 占用空间也会变大, 本地win10-4G设为20就好, 过大小心OOM
+        'embed_size': 100,  # 字/词向量维度, bert取768, word取300, char可以更小些
         'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
-        'trainable': True,  # embedding是静态的还是动态的, 即控制可不可以微调
-        'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
-        'embedding_type': 'bert',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
+        'trainable': False,  # embedding是静态的还是动态的, 即控制可不可以微调
+        'level_type': 'word',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
+        'embedding_type': 'word2vec',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
         'gpu_memory_fraction': 0.66, #gpu使用率
         'model': {'label': 17,  # 类别数
                   'batch_size': 2,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
-                  'dropout': 0.32,  # 随机失活, 概率
+                  'dropout': 0.5,  # 随机失活, 概率
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                   'decay_rate': 0.9,  # 学习率衰减系数, 乘法
                   'epochs': 20,  # 训练最大轮次

@@ -132,7 +132,7 @@ class RandomEmbedding(BaseEmbedding):
                             count = count + 1
                             token2idx[text_one] = count
         else:
-            raise RuntimeError("your input level_type is wrong, it must be 'dict' or 'corpus'")
+            raise RuntimeError("your input corpus_path is wrong, it must be 'dict' or 'corpus'")
         self.token2idx = token2idx
         self.idx2token = {}
         for key, value in self.token2idx.items():

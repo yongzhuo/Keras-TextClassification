@@ -17,7 +17,7 @@ from keras import regularizers
 from keras_textclassification.base.graph import graph
 
 
-class DeepMoji(graph):
+class DeepMojiGraph(graph):
     def __init__(self, hyper_parameters):
         """
             初始化

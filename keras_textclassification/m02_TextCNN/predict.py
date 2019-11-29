@@ -51,10 +51,16 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     for x_one in x:
         count += 1
         ques_embed = ra_ed.sentence2idx(x_one)
-        if hyper_parameters['embedding_type'] == 'bert': # bert数据处理, token
+
+        if hyper_parameters['embedding_type'] in  ['bert', 'albert']:
             x_val_1 = np.array([ques_embed[0]])
             x_val_2 = np.array([ques_embed[1]])
             x_val = [x_val_1, x_val_2]
+        elif hyper_parameters['embedding_type'] == 'xlnet':
+            x_val_1 = np.array([ques_embed[0]])
+            x_val_2 = np.array([ques_embed[1]])
+            x_val_3 = np.array([ques_embed[2]])
+            x_val = [x_val_1, x_val_2, x_val_3]
         else:
             x_val = ques_embed
         # 预测

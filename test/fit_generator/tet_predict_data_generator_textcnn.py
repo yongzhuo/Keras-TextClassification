@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
 # !/usr/bin/python
-# @time     :2019/6/3 10:51
+# @time     :2019/11/03 10:51
 # @author   :Mo
-# @function :train of fast text with baidu-qa-2019 in question title
+# @function :pred of text-cnn with baidu-qa-2019 in question title
 
 
 # 适配linux
@@ -18,7 +18,7 @@ from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, 
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, read_and_process, load_json
 # 模型图
-from keras_textclassification.m13_CapsuleNet.graph import CapsuleNetGraph as Graph
+from keras_textclassification.m02_TextCNN.graph import TextCNNGraph as Graph
 # 模型评估
 from sklearn.metrics import classification_report
 # 计算时间
@@ -73,14 +73,12 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     # 评估
     report_predict = classification_report(index_y, index_pred,
                                            target_names=target_names, digits=9)
-
     count = 0
     for i in range(len(index_pred)):
-        if index_y[i]==index_pred[i]:
+        if index_y[i] == index_pred[i]:
             count += 1
+    print(count)
     print(report_predict)
-    print('accuracy:{}'.format(count/len(index_y)))
-
     print("耗时:" + str(time.time() - time_start))
 
 
@@ -125,15 +123,12 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
 
 if __name__=="__main__":
     # 测试集预测
-    pred_tet(rate=1) # sample条件下设为1,否则训练语料可能会很少
+    pred_tet(path_test=path_baidu_qa_2019_valid, rate=1) # sample条件下设为1,否则训练语料可能会很少
 
     # 可输入 input 预测
     pred_input()
 
-# 92218/92218 [==============================] - 138s 2ms/step - loss: 1.0619 - acc: 0.7534 - val_loss: 3.3621 - val_acc: 0.3412
-# Epoch 00020: val_loss improved from 3.36474 to 3.36213, saving model to D:/workspace/pythonMyCode/django_project/Keras-TextClassification/keras_textclassification/data/model/fast_text/model_fast_text.h5
-# 耗时:2830.3001523017883
-
-# 92218/92218 [==============================] - 161s 2ms/step - loss: 0.0449 - acc: 0.9887 - val_loss: 0.7595 - val_acc: 0.8114
-# Epoch 00018: val_loss improved from 0.76525 to 0.75950, saving model to D:/workspace/pythonMyCode/django_project/Keras-TextClassification/keras_textclassification/data/model/fast_text/model_fast_text.h5
-# Epoch 19/20
+# 180/180 [==============================] - 56s 313ms/step - loss: 0.0696 - acc: 0.9784 - val_loss: 0.8469 - val_acc: 0.8155
+#
+# Epoch 00016: val_loss improved from 0.85291 to 0.84695, saving model to D:/workspace/pythonMyCode/django_project/Keras-TextClassification/keras_textclassification/data/model/fast_text/model_fast_text.h5
+# Epoch 17/20
