@@ -275,8 +275,8 @@ class XlnetEmbedding(BaseEmbedding):
         super().__init__(hyper_parameters)
 
     def build(self):
+        from keras_xlnet import load_trained_model_from_checkpoint, set_custom_objects
         from keras_xlnet import Tokenizer, ATTENTION_TYPE_BI, ATTENTION_TYPE_UNI
-        from keras_xlnet import load_trained_model_from_checkpoint
 
         self.embedding_type = 'xlnet'
         self.checkpoint_path = os.path.join(self.corpus_path, 'xlnet_model.ckpt')
@@ -297,28 +297,47 @@ class XlnetEmbedding(BaseEmbedding):
                                                    target_len=self.target_len,
                                                    batch_size=self.batch_size,
                                                    mask_index=0)
+        #
+        set_custom_objects()
         # 字典加载
         self.tokenizer = Tokenizer(self.spiece_model)
         # debug时候查看layers
         self.model_layers = model.layers
         len_layers = self.model_layers.__len__()
         print(len_layers)
+
+        layer_real = [i for i in range(25)] + [-i for i in range(25)]
+        # 简要判别一下
+        self.layer_indexes = [i if i in layer_real else -2 for i in self.layer_indexes]
+
         len_couche = int((len_layers - 6) / 10)
         # 一共246个layer
         # 每层10个layer（MultiHeadAttention,Dropout,Add,LayerNormalization）,第一是9个layer的输入和embedding层
         # 一共24层
-        layer_dict = []
-        layer_0 = 6
+        layer_dict = [10]
+        layer_0 = 3
         for i in range(len_couche):
             layer_0 = layer_0 + 10
-            layer_dict.append(layer_0 - 1)
-        layer_dict.append(248)
+            layer_dict.append(layer_0)
+        layer_dict.append(245)
+        # 测试 get_output_at
+        # def get_number(index):
+        #     try:
+        #        model_node = model.get_output_at(node_index=index)
+        #        gg = 0
+        #     except:
+        #         print('node index wrong!')
+        #         print(index)
+        # list_index = [i for i in range(25)] + [-i for i in range(25)]
+        # for li in list_index:
+        #     get_number(li)
+
         # 输出它本身
         if len(self.layer_indexes) == 0:
             encoder_layer = model.output
         # 分类如果只有一层，取得不正确的话就取倒数第二层
         elif len(self.layer_indexes) == 1:
-            if self.layer_indexes[0] in [i for i in range(len_couche + 1)]:
+            if self.layer_indexes[0] in layer_real:
                 encoder_layer = model.get_layer(index=layer_dict[self.layer_indexes[0]]).output
             else:
                 encoder_layer = model.get_layer(index=layer_dict[-1]).output
@@ -326,7 +345,7 @@ class XlnetEmbedding(BaseEmbedding):
         else:
             # layer_indexes must be [0, 1, 2,3,......24]
             all_layers = [model.get_layer(index=layer_dict[lay]).output
-                          if lay in [i for i in range(len_couche + 1)]
+                          if lay in layer_real
                           else model.get_layer(index=layer_dict[-1]).output  # 如果给出不正确，就默认输出倒数第一层
                           for lay in self.layer_indexes]
             print(self.layer_indexes)
@@ -375,40 +394,41 @@ class AlbertEmbedding(BaseEmbedding):
         self.embedding_type = 'albert'
         dict_path = os.path.join(self.corpus_path, 'vocab.txt')
         print('load bert model start!')
+        layer_real  = [i for i in range(25)] + [-i for i in range(25)]
         # 简要判别一下
-        self.layer_indexes = [i if i in [0,1,2,3,4,5,6,7,8,9,10,11, -1,-2] else -1 for i in self.layer_indexes]
+        self.layer_indexes = [i if i in layer_real else -2 for i in self.layer_indexes]
         self.model = load_brightmart_albert_zh_checkpoint(self.corpus_path,
                                                      training=self.trainable,
                                                      seq_len=self.len_max,
-                                                     output_layers = self.layer_indexes)
-        self.input = self.model.inputs
-        self.output = self.model.outputs[0]
+                                                     output_layers = None) # self.layer_indexes)
+        # self.input = self.model.inputs
+        # self.output = self.model.outputs[0]
 
-        # model_l = model.layers
+        model_l = self.model.layers
         print('load bert model end!')
         # albert model all layers
-        layer_dict = [8, 13]
+        layer_dict = [4, 8, 11, 13]
         layer_0 = 13
-        for i in range(10):
-            layer_0 = layer_0 + 2
+        for i in range(20):
+            layer_0 = layer_0 + 1
             layer_dict.append(layer_0)
-        layer_dict.append(36)
+        layer_dict.append(34)
         print(layer_dict)
         # 输出它本身
         if len(self.layer_indexes) == 0:
             encoder_layer = self.model.output
         # 分类如果只有一层，就只取最后那一层的weight；取得不正确，就默认取最后一层
         elif len(self.layer_indexes) == 1:
-            if self.layer_indexes[0] in [i + 1 for i in range(13)]:
-                encoder_layer = self.model.get_layer(index=layer_dict[self.layer_indexes[0] - 1]).output
+            if self.layer_indexes[0] in layer_real:
+                encoder_layer = self.model.get_layer(index=layer_dict[self.layer_indexes[0]]).output
             else:
-                encoder_layer = self.model.get_layer(index=layer_dict[-1]).output
+                encoder_layer = self.model.get_layer(index=layer_dict[-2]).output
         # 否则遍历需要取的层，把所有层的weight取出来并拼接起来shape:768*层数
         else:
             # layer_indexes must be [1,2,3,......12]
             # all_layers = [model.get_layer(index=lay).output if lay is not 1 else model.get_layer(index=lay).output[0] for lay in layer_indexes]
-            all_layers = [self.model.get_layer(index=layer_dict[lay - 1]).output if lay in [i + 1 for i in range(13)]
-                          else self.model.get_layer(index=layer_dict[-1]).output  # 如果给出不正确，就默认输出最后一层
+            all_layers = [self.model.get_layer(index=layer_dict[lay]).output if lay in layer_real
+                          else self.model.get_layer(index=layer_dict[-2]).output  # 如果给出不正确，就默认输出最后一层
                           for lay in self.layer_indexes]
             all_layers_select = []
             for all_layers_one in all_layers:

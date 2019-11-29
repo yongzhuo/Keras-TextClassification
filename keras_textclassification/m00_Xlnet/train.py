@@ -40,7 +40,7 @@ def train(hyper_parameters=None, rate=1.0):
         'len_max': 32,  # 句子最大长度, 固定 推荐20-50
         'embed_size': 768,  # 字/词向量维度
         'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
-        'trainable': True,  # embedding是静态的还是动态的, 即控制可不可以微调
+        'trainable': False,  # 暂不支持微调True, embedding是静态的还是动态的, 即控制可不可以微调
         'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word'
         'embedding_type': 'xlnet',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
         'gpu_memory_fraction': 0.76, #gpu使用率
@@ -65,7 +65,7 @@ def train(hyper_parameters=None, rate=1.0):
                   'path_hyper_parameters': path_hyper_parameters,  # 模型(包括embedding)，超参数地址,
                   'path_fineture': path_fineture,  # 保存embedding trainable地址, 例如字向量、词向量、bert向量等
                   },
-        'embedding': {'layer_indexes': [], # [i for i in range(25)], 暂时只支持默认输出,即选择'[]', # bert/xlnet取的层数,包括embedding层0，其他是正常的层
+        'embedding': {'layer_indexes': [i for i in range(25)] + [-i for i in range(25)], # bert/xlnet取的层数,包括embedding层0，其他是正常的层
                       # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
                       'xlnet_embed':{'attention_type': 'bi',  # or 'uni'
                                      'memory_len': 0,

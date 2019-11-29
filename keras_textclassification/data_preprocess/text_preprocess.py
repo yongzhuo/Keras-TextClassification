@@ -265,8 +265,11 @@ class PreprocessText:
             x_1 = np.array([x[0][0] for x in x_])
             x_2 = np.array([x[1][0] for x in x_])
             x_3 = np.array([x[2][0] for x in x_])
-            x_4 = np.array([x[3][0] for x in x_])
-            x_all = [x_1, x_2, x_3, x_4]
+            if embed.trainable:
+                x_4 = np.array([x[3][0] for x in x_])
+                x_all = [x_1, x_2, x_3, x_4]
+            else:
+                x_all = [x_1, x_2, x_3]
             return x_all, y_
         else:
             x_, y_ = np.array(x), np.array(label_zo)
