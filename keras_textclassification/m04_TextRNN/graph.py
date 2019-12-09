@@ -33,13 +33,13 @@ class TextRNNGraph(graph):
         super().create_model(hyper_parameters)
         x = self.word_embedding.output
         # x = Reshape((self.len_max, self.embed_size, 1))(embedding)
-        if self.rnn_units=="LSTM":
+        if self.rnn_type=="LSTM":
                 layer_cell = LSTM
-        elif self.rnn_units=="GRU":
+        elif self.rnn_type=="GRU":
                 layer_cell = GRU
-        elif self.rnn_units=="CuDNNLSTM":
+        elif self.rnn_type=="CuDNNLSTM":
                 layer_cell = CuDNNLSTM
-        elif self.rnn_units=="CuDNNGRU":
+        elif self.rnn_type=="CuDNNGRU":
                 layer_cell = CuDNNGRU
         else:
             layer_cell = GRU
