@@ -32,6 +32,6 @@ class FastTextGraph(graph):
         x = GlobalMaxPooling1D()(embedding)
         output = Dense(self.label, activation=self.activate_classify)(x)
         self.model = Model(inputs=self.word_embedding.input, outputs=output)
-        self.model.summary(120)
+        self.model.summary(132)
 
 

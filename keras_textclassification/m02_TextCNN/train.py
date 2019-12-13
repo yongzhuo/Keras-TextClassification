@@ -29,9 +29,9 @@ def train(hyper_parameters=None, rate=1.0):
         'len_max': 55,  # 句子最大长度, 固定推荐20-50, bert越长会越慢, 占用空间也会变大, 本地win10-4G设为20就好, 过大小心OOM
         'embed_size': 100,  # 字/词向量维度, bert取768, word取300, char可以更小些
         'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
-        'trainable': False,  # embedding是静态的还是动态的, 即控制可不可以微调
-        'level_type': 'word',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
-        'embedding_type': 'word2vec',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
+        'trainable': True,  # embedding是静态的还是动态的, 即控制可不可以微调
+        'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
+        'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
         'gpu_memory_fraction': 0.66, #gpu使用率
         'model': {'label': 17,  # 类别数
                   'batch_size': 2,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
@@ -53,7 +53,7 @@ def train(hyper_parameters=None, rate=1.0):
                   },
         'embedding': {'layer_indexes': [1, 2, 3, 12, 13], # bert取的层数，1为embedding层，未处理
                       # 'corpus_path': 'Y:/BaiduNetdiskDownload/DataSet/bert-model/chinese_bert_chinese_wwm_L-12_H-768_A-12', # embedding预训练数据地址,不配则会默认取conf里边默认的地址
-                      'corpus_path':'Y:/BaiduNetdiskDownload/DataSet/bert-model/baidu_ernie',
+                      # 'corpus_path':'Y:/BaiduNetdiskDownload/DataSet/bert-model/baidu_ernie',
                       # keras - bert可以加载谷歌版bert, 百度版ernie(需转换，https: // github.com / ArthurRizar / tensorflow_ernie), 哈工大版bert - wwm(tf框架，https: // github.com / ymcui / Chinese - BERT - wwm)
                       },
         'data':{'train_data': path_baidu_qa_2019_train, # 训练数据

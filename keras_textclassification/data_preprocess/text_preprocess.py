@@ -154,6 +154,33 @@ def delete_file(path):
             delete_file(path_children)
 
 
+def get_ngram(text, ns=[1]):
+    """
+        获取文本的ngram等特征
+    :param text: str, like "大漠帝国"
+    :param ns: list, like [1, 2, 3]
+    :return: list
+    """
+    if type(ns) != list:
+        raise RuntimeError("ns of function get_ngram() must be list!")
+    for n in ns:
+        if n < 1:
+            raise RuntimeError("enum of ns must '>1'!")
+    len_text = len(text)
+    ngrams = []
+    for n in ns:
+        ngram_n = []
+        for i in range(len_text):
+            if i + n <= len_text:
+                ngram_n.append(text[i:i+n])
+            else:
+                break
+        if not ngram_n:
+            ngram_n.append(text)
+        ngrams += ngram_n
+    return ngrams
+
+
 def transform_multilabel_to_multihot(sample, label=1070):
     """
 

@@ -9,6 +9,7 @@ from keras_textclassification.conf.path_config import path_embedding_vector_word
 from keras_textclassification.conf.path_config import path_embedding_bert, path_embedding_xlnet, path_embedding_albert
 from keras_textclassification.conf.path_config import path_embedding_random_char, path_embedding_random_word
 from keras_textclassification.data_preprocess.text_preprocess import extract_chinese
+from keras_textclassification.data_preprocess.text_preprocess import get_ngram
 
 from keras_textclassification.keras_layers.non_mask_layer import NonMaskingLayer
 from keras.layers import Add, Embedding, Lambda
@@ -58,6 +59,13 @@ class BaseEmbedding:
                 self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_albert)
             else:
                 raise RuntimeError("embedding_type must be 'random', 'word2vec' or 'bert'")
+        elif self.level_type == "ngram":
+            if self.embedding_type == "random":
+                self.corpus_path = hyper_parameters['embedding'].get('corpus_path')
+                if not self.corpus_path:
+                    raise RuntimeError("corpus_path must exists!")
+            else:
+                raise RuntimeError("embedding_type must be 'random', 'word2vec' or 'bert'")
         else:
             raise RuntimeError("level_type must be 'char' or 'word'")
         # 定义的符号
@@ -101,8 +109,9 @@ class BaseEmbedding:
 
 class RandomEmbedding(BaseEmbedding):
     def __init__(self, hyper_parameters):
-        super().__init__(hyper_parameters)
+        self.ngram_ns = hyper_parameters['embedding'].get('ngram_ns', [1, 2, 3]) # ngram信息, 根据预料获取
         # self.path = hyper_parameters.get('corpus_path', path_embedding_random_char)
+        super().__init__(hyper_parameters)
 
     def deal_corpus(self):
         token2idx = self.ot_dict.copy()
@@ -118,16 +127,18 @@ class RandomEmbedding(BaseEmbedding):
                         count = count + 1
                         token2idx[term_one] = count
 
-        elif 'corpus' in self.corpus_path:
+        elif os.path.exists(self.corpus_path):
             with open(file=self.corpus_path, mode='r', encoding='utf-8') as fd:
                 terms = fd.readlines()
                 for term_one in terms:
                     if self.level_type == 'char':
                         text = list(term_one.replace(' ', '').strip())
                     elif self.level_type == 'word':
-                        text = list(jieba.cut(term_one, cut_all=False, HMM=True))
+                        text = list(jieba.cut(term_one, cut_all=False, HMM=False))
+                    elif self.level_type == 'ngram':
+                        text = get_ngram(term_one, ns=self.ngram_ns)
                     else:
-                        raise RuntimeError("your input level_type is wrong, it must be 'word' or 'char'")
+                        raise RuntimeError("your input level_type is wrong, it must be 'word', 'char', 'ngram'")
                     for text_one in text:
                         if term_one not in token2idx:
                             count = count + 1
@@ -142,18 +153,38 @@ class RandomEmbedding(BaseEmbedding):
     def build(self, **kwargs):
         self.vocab_size = len(self.token2idx)
         self.input = Input(shape=(self.len_max,), dtype='int32')
-        self.output = Embedding(self.vocab_size,
+        self.output = Embedding(self.vocab_size+1,
                                 self.embed_size,
                                 input_length=self.len_max,
                                 trainable=self.trainable,
                                 )(self.input)
         self.model = Model(self.input, self.output)
 
+    def sentence2idx(self, text):
+        text = extract_chinese(str(text).upper())
+        if self.level_type == 'char':
+            text = list(text)
+        elif self.level_type == 'word':
+            text = list(jieba.cut(text, cut_all=False, HMM=False))
+        elif self.level_type == 'ngram':
+            text = get_ngram(text, ns=self.ngram_ns)
+        else:
+            raise RuntimeError("your input level_type is wrong, it must be 'word' or 'char'")
+        # text = [text_one for text_one in text]
+        len_leave = self.len_max - len(text)
+        if len_leave >= 0:
+            text_index = [self.token2idx[text_char] if text_char in self.token2idx else self.token2idx['[UNK]'] for
+                          text_char in text] + [self.token2idx['[PAD]'] for i in range(len_leave)]
+        else:
+            text_index = [self.token2idx[text_char] if text_char in self.token2idx else self.token2idx['[UNK]'] for
+                          text_char in text[0:self.len_max]]
+        return text_index
+
 
 class WordEmbedding(BaseEmbedding):
     def __init__(self, hyper_parameters):
-        super().__init__(hyper_parameters)
         # self.path = hyper_parameters.get('corpus_path', path_embedding_vector_word2vec)
+        super().__init__(hyper_parameters)
 
     def build(self, **kwargs):
         self.embedding_type = 'word2vec'
