@@ -37,7 +37,7 @@ class XlnetGraph(graph):
         super().create_model(hyper_parameters)
         embedding_output = self.word_embedding.output
         # x = embedding_output
-        x = Lambda(lambda x : x[:, 0:1, :])(embedding_output) # 获取CLS
+        x = Lambda(lambda x : x[:, -2:-1, :])(embedding_output) # 获取CLS
         # # text cnn
         # bert_output_emmbed = SpatialDropout1D(rate=self.dropout)(embedding_output)
         # concat_out = []
