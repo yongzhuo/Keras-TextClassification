@@ -157,8 +157,7 @@ def delete_file(path):
 def get_ngram(text, ns=[1]):
     """
         获取文本的ngram等特征
-    :param text: str, like "大漠帝国"
-    :param ns: list, like [1, 2, 3]
+    :param text: str
     :return: list
     """
     if type(ns) != list:

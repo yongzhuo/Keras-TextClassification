@@ -40,12 +40,13 @@ def train(hyper_parameters=None, rate=1.0):
                   'decay_rate': 0.9,  # 学习率衰减系数, 乘法
                   'epochs': 20,  # 训练最大轮次
                   'patience': 3, # 早停,2-3就好
-                  'lr': 5e-5,  # 学习率,bert取5e-5,其他取1e-3, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
+                  'lr': 5e-3,  # 学习率,bert取5e-5,其他取1e-3, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
                   'l2': 1e-9,  # l2正则化
                   'activate_classify': 'softmax',  # 最后一个layer, 即分类激活函数
                   'loss': 'categorical_crossentropy',  # 损失函数
                   'metrics': 'accuracy',  # 保存更好模型的评价标准
                   'is_training': True,  # 训练后者是测试模型
+                  'path_model_dir': path_model_dir,  # 模型目录
                   'model_path': path_model,
                   # 模型地址, loss降低则保存的依据, save_best_only=True, save_weights_only=True
                   'path_hyper_parameters': path_hyper_parameters,  # 模型(包括embedding)，超参数地址,

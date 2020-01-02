@@ -55,6 +55,7 @@ def train(hyper_parameters=None, rate=1.0):
                   'loss': 'categorical_crossentropy',  # 损失函数
                   'metrics': 'accuracy',  # 保存更好模型的评价标准
                   'is_training': True,  # 训练后者是测试模型
+                  'path_model_dir': path_model_dir,  # 模型目录
                   'model_path': path_model, # 模型地址, loss降低则保存的依据, save_best_only=True, save_weights_only=True
                   'path_hyper_parameters': path_hyper_parameters,  # 模型(包括embedding)，超参数地址,
                   'path_fineture': path_fineture,  # 保存embedding trainable地址, 例如字向量、词向量、bert向量等

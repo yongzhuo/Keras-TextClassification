@@ -5,11 +5,12 @@
 # @function :graph of base
 
 
+from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
 from keras_textclassification.data_preprocess.generator_preprocess import PreprocessGenerator
 from keras_textclassification.data_preprocess.text_preprocess import save_json
 from keras_textclassification.keras_layers.keras_lookahead import Lookahead
+from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
 from keras_textclassification.keras_layers.keras_radam import RAdam
-from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.optimizers import Adam
 from keras import backend as K
 
@@ -46,9 +47,10 @@ class graph:
         self.loss = hyper_parameters_model.get('loss', 'categorical_crossentropy') # 损失函数, mse, categorical_crossentropy, sparse_categorical_crossentropy, binary_crossentropy等
         self.metrics = hyper_parameters_model.get('metrics', 'accuracy') # acc, binary_accuracy, categorical_accuracy, sparse_categorical_accuracy, sparse_top_k_categorical_accuracy
         self.is_training = hyper_parameters_model.get('is_training', False)  # 是否训练, 保存时候为Flase,方便预测
-        self.model_path = hyper_parameters_model.get('model_path', "model_path")  # 模型地址
-        self.path_hyper_parameters = hyper_parameters_model.get('path_hyper_parameters', "path_hyper_parameters") # 超参数保存地址
-        self.path_fineture = hyper_parameters_model.get('path_fineture', "path_fineture") # embedding层保存地址, 例如静态词向量、动态词向量、微调bert层等
+        self.path_model_dir = hyper_parameters_model.get('path_model_dir', path_model_dir)  # 模型目录地址
+        self.model_path = hyper_parameters_model.get('model_path', path_model)  # 模型地址
+        self.path_hyper_parameters = hyper_parameters_model.get('path_hyper_parameters', path_hyper_parameters) # 超参数保存地址
+        self.path_fineture = hyper_parameters_model.get('path_fineture', path_fineture) # embedding层保存地址, 例如静态词向量、动态词向量、微调bert层等
         self.patience = hyper_parameters_model.get('patience', 3) # 早停, 2-3就可以了
         self.optimizer_name = hyper_parameters_model.get('optimizer_name', 'RAdam,Lookahead') # 早停, 2-3就可以了
         if self.gpu_memory_fraction:
@@ -96,7 +98,8 @@ class graph:
           评价函数、早停
         :return: 
         """
-        cb_em = [ EarlyStopping(monitor='val_loss', mode='min', min_delta=1e-8, patience=self.patience),
+        cb_em = [ TensorBoard(log_dir=os.path.join(self.path_model_dir, "logs"), batch_size=self.batch_size, update_freq='batch'),
+                  EarlyStopping(monitor='val_loss', mode='min', min_delta=1e-8, patience=self.patience),
                   ModelCheckpoint(monitor='val_loss', mode='min', filepath=self.model_path, verbose=1,
                                   save_best_only=True, save_weights_only=True),]
         return cb_em
@@ -133,7 +136,7 @@ class graph:
         # 保存超参数
         self.hyper_parameters['model']['is_training'] = False # 预测时候这些设为False
         self.hyper_parameters['model']['trainable'] = False
-        self.hyper_parameters['model']['dropout'] = 1.0
+        self.hyper_parameters['model']['dropout'] = 0.0
 
         save_json(jsons=self.hyper_parameters, json_path=self.path_hyper_parameters)
         # 训练模型
@@ -157,7 +160,7 @@ class graph:
         # 保存超参数
         self.hyper_parameters['model']['is_training'] = False  # 预测时候这些设为False
         self.hyper_parameters['model']['trainable'] = False
-        self.hyper_parameters['model']['dropout'] = 1.0
+        self.hyper_parameters['model']['dropout'] = 0.0
 
         save_json(jsons=self.hyper_parameters, json_path=self.path_hyper_parameters)
 
