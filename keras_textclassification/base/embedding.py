@@ -140,7 +140,7 @@ class RandomEmbedding(BaseEmbedding):
                     else:
                         raise RuntimeError("your input level_type is wrong, it must be 'word', 'char', 'ngram'")
                     for text_one in text:
-                        if term_one not in token2idx:
+                        if text_one not in token2idx:
                             count = count + 1
                             token2idx[text_one] = count
         else:
