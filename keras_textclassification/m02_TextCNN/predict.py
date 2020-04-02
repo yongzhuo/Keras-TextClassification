@@ -128,5 +128,3 @@ if __name__=="__main__":
 
     # 可输入 input 预测
     pred_input()
-
-

@@ -101,7 +101,7 @@ class graph:
         cb_em = [ TensorBoard(log_dir=os.path.join(self.path_model_dir, "logs"), batch_size=self.batch_size, update_freq='batch'),
                   EarlyStopping(monitor='val_loss', mode='min', min_delta=1e-8, patience=self.patience),
                   ModelCheckpoint(monitor='val_loss', mode='min', filepath=self.model_path, verbose=1,
-                                  save_best_only=True, save_weights_only=True),]
+                                  save_best_only=True, save_weights_only=False),]
         return cb_em
 
     def create_compile(self):
@@ -177,8 +177,8 @@ class graph:
                                                              path=self.hyper_parameters['data']['val_data'],
                                                              embed=embed,
                                                              rate=rate)
-        steps_per_epoch = len_train // self.batch_size
-        validation_steps = len_val // self.batch_size
+        steps_per_epoch = len_train // self.batch_size + 1
+        validation_steps = len_val // self.batch_size + 1
         # 训练模型
         self.model.fit_generator(generator=data_fit_generator,
                                  validation_data=data_dev_generator,

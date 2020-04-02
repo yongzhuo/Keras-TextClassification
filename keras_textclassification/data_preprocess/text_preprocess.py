@@ -9,6 +9,7 @@ from keras_textclassification.conf.path_config import path_model_dir
 path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
 path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
 
+from collections import Counter
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
@@ -225,7 +226,7 @@ class PreprocessText:
         else:
             raise RuntimeError("path_fast_text_model_label2index is None")
 
-    def preprocess_label_ques_to_idx(self, embedding_type, path, embed, rate=1, shuffle=True):
+    def preprocess_label_ques_to_idx(self, embedding_type, path, embed, rate=1, shuffle=True, graph=None):
         data = pd.read_csv(path)
         ques = data['ques'].tolist()
         label = data['label'].tolist()
@@ -464,7 +465,8 @@ class PreprocessSim:
         else:
             raise RuntimeError("path_fast_text_model_label2index is None")
 
-    def preprocess_label_ques_to_idx(self, embedding_type, path, embed, rate=1, shuffle=True):
+    def preprocess_label_ques_to_idx(self, embedding_type, path, embed,
+                                     rate=1, shuffle=True, graph=None):
         data = pd.read_csv(path)
         ques_1 = data['sentence1'].tolist()
         ques_2 = data['sentence2'].tolist()
@@ -524,3 +526,132 @@ class PreprocessSim:
             x_2 = np.array([x[1] for x in x_])
             x_all = [x_1, x_2]
             return x_all, y_
+        elif embedding_type == 'xlnet':
+            x_, y_ = x, np.array(label_zo)
+            x_1 = np.array([x[0][0] for x in x_])
+            x_2 = np.array([x[1][0] for x in x_])
+            x_3 = np.array([x[2][0] for x in x_])
+            if embed.trainable:
+                x_4 = np.array([x[3][0] for x in x_])
+                x_all = [x_1, x_2, x_3, x_4]
+            else:
+                x_all = [x_1, x_2, x_3]
+            return x_all, y_
+        else:
+            x_, y_ = np.array(x), np.array(label_zo)
+            return x_, y_
+
+
+class PreprocessSimConv2019:
+    """
+        数据预处理, 输入为csv格式, [label,ques]
+    """
+    def __init__(self):
+        self.l2i_i2l = None
+        if os.path.exists(path_fast_text_model_l2i_i2l):
+            self.l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+
+    def prereocess_idx(self, pred):
+        if os.path.exists(path_fast_text_model_l2i_i2l):
+            pred_i2l = {}
+            i2l = self.l2i_i2l['i2l']
+            for i in range(len(pred)):
+                pred_i2l[i2l[str(i)]] = pred[i]
+            pred_i2l_rank = [sorted(pred_i2l.items(), key=lambda k: k[1], reverse=True)]
+            return pred_i2l_rank
+        else:
+            raise RuntimeError("path_fast_text_model_label2index is None")
+
+    def prereocess_pred_xid(self, pred):
+        if os.path.exists(path_fast_text_model_l2i_i2l):
+            pred_l2i = {}
+            l2i = self.l2i_i2l['l2i']
+            for i in range(len(pred)):
+                pred_l2i[pred[i]] = l2i[pred[i]]
+            pred_l2i_rank = [sorted(pred_l2i.items(), key=lambda k: k[1], reverse=True)]
+            return pred_l2i_rank
+        else:
+            raise RuntimeError("path_fast_text_model_label2index is None")
+
+    def preprocess_label_ques_to_idx(self, embedding_type, path, embed, rate=1, shuffle=True):
+        data = pd.read_csv(path)
+        # category, query1, query2, label
+        ques_1 = data['query1'].tolist()
+        category = data['category'].tolist()
+        ques_2 = data['query2'].tolist()
+        label = data['label'].tolist()
+        ques_1 = [str(q1).upper() for q1 in ques_1]
+        ques_2 = [str(q2).upper() for q2 in ques_2]
+
+        label = [str(l).upper() for l in label]
+        if shuffle:
+            ques_1 = np.array(ques_1)
+            ques_2 = np.array(ques_2)
+            category = np.array(category)
+            label = np.array(label)
+            indexs = [ids for ids in range(len(label))]
+            random.shuffle(indexs)
+            ques_1, ques_2, label, category = ques_1[indexs].tolist(), ques_2[indexs].tolist(), label[indexs].tolist(), category[indexs].tolist()
+        # 如果label2index存在则不转换了
+        if not os.path.exists(path_fast_text_model_l2i_i2l):
+            label_set = set(label)
+            count = 0
+            label2index = {}
+            index2label = {}
+            for label_one in label_set:
+                label2index[label_one] = count
+                index2label[count] = label_one
+                count = count + 1
+
+            l2i_i2l = {}
+            l2i_i2l['l2i'] = label2index
+            l2i_i2l['i2l'] = index2label
+            save_json(l2i_i2l, path_fast_text_model_l2i_i2l)
+        else:
+            l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+
+        len_ql = int(rate * len(label))
+        if len_ql <= 500: # sample时候不生效,使得语料足够训练
+            len_ql = len(label)
+
+        x = []
+        print("ques to index start!")
+        len_ques_list = []
+        label_list = []
+        for i in tqdm(range(len_ql)):
+            que_1 = ques_1[i]
+            que_2 = ques_2[i]
+            category_3 = category[i]
+            que_embed = embed.sentence2idx(text=category_3+":"+que_1, second_text=category_3+":"+que_2)
+
+            # que_embed = embed.sentence2idx(text=category_3+":"+que_1, second_text=category_3+":"+que_2)
+            # que_embed = embed.sentence2idx(text=que_1, second_text=que_2)
+            x.append(que_embed) # [[], ]
+            len_ques_list.append(len(que_1+que_2))
+            label_list.append(category_3)
+        len_ques_counter = Counter(len_ques_list)
+        label_counter = Counter(label_list)
+        print("长度:{}".format(dict(len_ques_counter)))
+        print("长度字典:{}".format(dict(len_ques_counter).keys()))
+        print("最大长度:{}".format(max(list(dict(len_ques_counter).keys()))))
+        print("类别字典:{}".format(dict(label_counter)))
+        label_zo = []
+        print("label to onehot start!")
+        label_len_ql = label[0:len_ql]
+        for j in tqdm(range(len_ql)):
+            label_one = label_len_ql[j]
+            label_zeros = [0] * len(l2i_i2l['l2i'])
+            label_zeros[l2i_i2l['l2i'][label_one]] = 1
+            label_zo.append(label_zeros)
+
+        if embedding_type in  ['bert', 'albert']:
+            x_, y_ = np.array(x), np.array(label_zo)
+            x_1 = np.array([x[0] for x in x_])
+            x_2 = np.array([x[1] for x in x_])
+            x_all = [x_1, x_2]
+            return x_all, y_
+        else:
+            x_, y_ = np.array(x), np.array(label_zo)
+
+            return x_, y_
+

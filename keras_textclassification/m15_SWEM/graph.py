@@ -6,12 +6,11 @@
 # @paper    : Baseline Needs More Love: On Simple Word-Embedding-Based Models and Associated Pooling Mechanisms()
 
 
-from keras.layers import GlobalMaxPooling1D, GlobalAveragePooling1D, MaxPooling1D, Concatenate
+from keras.layers import GlobalMaxPooling1D, GlobalAveragePooling1D, Concatenate
 from keras_textclassification.base.graph import graph
 from keras.layers import Dense, Lambda
-import tensorflow as tf
 from keras.models import Model
-import keras.backend as K
+import tensorflow as tf
 
 
 class SWEMGraph(graph):

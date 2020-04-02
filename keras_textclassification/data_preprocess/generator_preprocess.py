@@ -60,7 +60,7 @@ class PreprocessGenerator:
         file_csv.close()
         return label_set, len_all
 
-    def preprocess_label_ques_to_idx(self, embedding_type, batch_size, path, embed, rate=1):
+    def preprocess_label_ques_to_idx(self, embedding_type, batch_size, path, embed, rate=1, epcoh=20):
         label_set, len_all = self.preprocess_get_label_set(path)
         # 获取label转index字典等, 如果label2index存在则不转换了, dev验证集合的时候用
         if not os.path.exists(path_fast_text_model_l2i_i2l):
@@ -94,41 +94,41 @@ class PreprocessGenerator:
             label_zeros = [0] * len(l2i_i2l['l2i'])
             label_zeros[l2i_i2l['l2i'][label]] = 1
             return que_embed, label_zeros
+        for _ in range(epcoh):
+            while True:
+                file_csv = open(path, "r", encoding="utf-8")
+                cout_all_line = 0
+                cnt = 0
+                x, y = [], []
+                # 跳出循环
+                if len_ql < cout_all_line:
+                    break
+                for line in file_csv:
+                    cout_all_line += 1
+                    if cout_all_line > 1: # 第一条是标签'label,ques'，不选择
+                        x_line, y_line = process_line(line)
+                        x.append(x_line)
+                        y.append(y_line)
+                        cnt += 1
+                        if cnt == batch_size:
+                            if embedding_type in ['bert', 'albert']:
+                                x_, y_ = np.array(x), np.array(y)
+                                x_1 = np.array([x[0] for x in x_])
+                                x_2 = np.array([x[1] for x in x_])
+                                x_all = [x_1, x_2]
+                            elif embedding_type == 'xlnet':
+                                x_, y_ = x, np.array(y)
+                                x_1 = np.array([x[0][0] for x in x_])
+                                x_2 = np.array([x[1][0] for x in x_])
+                                x_3 = np.array([x[2][0] for x in x_])
+                                x_all = [x_1, x_2, x_3]
+                            else:
+                                x_all, y_ = np.array(x), np.array(y)
 
-        while True:
-            file_csv = open(path, "r", encoding="utf-8")
-            cout_all_line = 0
-            cnt = 0
-            x, y = [], []
-            # 跳出循环
-            if len_ql < cout_all_line:
-                break
-            for line in file_csv:
-                cout_all_line += 1
-                if cout_all_line > 1: # 第一条是标签'label,ques'，不选择
-                    x_line, y_line = process_line(line)
-                    x.append(x_line)
-                    y.append(y_line)
-                    cnt += 1
-                    if cnt == batch_size:
-                        if embedding_type in ['bert', 'albert']:
-                            x_, y_ = np.array(x), np.array(y)
-                            x_1 = np.array([x[0] for x in x_])
-                            x_2 = np.array([x[1] for x in x_])
-                            x_all = [x_1, x_2]
-                        elif embedding_type == 'xlnet':
-                            x_, y_ = x, np.array(y)
-                            x_1 = np.array([x[0][0] for x in x_])
-                            x_2 = np.array([x[1][0] for x in x_])
-                            x_3 = np.array([x[2][0] for x in x_])
-                            x_all = [x_1, x_2, x_3]
-                        else:
-                            x_all, y_ = np.array(x), np.array(y)
-
-                        cnt = 0
-                        yield (x_all, y_)
-                        x, y =[], []
-        file_csv.close()
+                            cnt = 0
+                            yield (x_all, y_)
+                            x, y =[], []
+            file_csv.close()
         print("preprocess_label_ques_to_idx ok")
 
 

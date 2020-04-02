@@ -32,17 +32,19 @@ class AttentionSelf(Layer):
         WQ = K.dot(x, self.kernel[0])
         WK = K.dot(x, self.kernel[1])
         WV = K.dot(x, self.kernel[2])
-        print("WQ.shape",WQ.shape)
-        print("K.permute_dimensions(WK, [0, 2, 1]).shape",K.permute_dimensions(WK, [0, 2, 1]).shape)
-        QK = K.batch_dot(WQ,K.permute_dimensions(WK, [0, 2, 1]))
+        # print("WQ.shape",WQ.shape)
+        # print("K.permute_dimensions(WK, [0, 2, 1]).shape",K.permute_dimensions(WK, [0, 2, 1]).shape)
+        QK = K.batch_dot(WQ, K.permute_dimensions(WK, [0, 2, 1]))
         QK = QK / (64**0.5)
         QK = K.softmax(QK)
-        print("QK.shape",QK.shape)
-        V = K.batch_dot(QK,WV)
+        # print("QK.shape",QK.shape)
+        V = K.batch_dot(QK, WV)
         return V
 
     def compute_output_shape(self, input_shape):
-        return (input_shape[0],input_shape[1],self.output_dim)
+        return (input_shape[0], input_shape[1], self.output_dim)
+
 
 if __name__=="__main__":
     att = AttentionSelf(300)
+
