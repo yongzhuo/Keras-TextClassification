@@ -67,7 +67,7 @@ def train(hyper_parameters=None, rate=1.0):
                   'path_fineture': path_fineture,  # 保存embedding trainable地址, 例如字向量、词向量、bert向量等
                   },
         'embedding': {'layer_indexes': [i for i in range(25)] + [-i for i in range(25)], # bert取的层数,包括embedding层
-                      # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
+                      # 'corpus_path': 'D:/soft_install/dataset/bert-model/albert_tiny_489k',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
                         },
         'data':{'train_data': path_baidu_qa_2019_train, # 训练数据
                 'val_data': path_baidu_qa_2019_valid    # 验证数据

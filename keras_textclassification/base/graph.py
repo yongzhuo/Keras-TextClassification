@@ -52,7 +52,7 @@ class graph:
         self.path_hyper_parameters = hyper_parameters_model.get('path_hyper_parameters', path_hyper_parameters) # 超参数保存地址
         self.path_fineture = hyper_parameters_model.get('path_fineture', path_fineture) # embedding层保存地址, 例如静态词向量、动态词向量、微调bert层等
         self.patience = hyper_parameters_model.get('patience', 3) # 早停, 2-3就可以了
-        self.optimizer_name = hyper_parameters_model.get('optimizer_name', 'RAdam,Lookahead') # 早停, 2-3就可以了
+        self.optimizer_name = hyper_parameters_model.get('optimizer_name', 'Adam') # 早停, 2-3就可以了
         if self.gpu_memory_fraction:
             # keras, tensorflow控制GPU使用率等
             import tensorflow as tf

@@ -20,8 +20,6 @@ class LEAMGraph(graph):
             初始化
         :param hyper_parameters: json，超参
         """
-        self.encode_type = hyper_parameters["model"].get("encode_type", "MAX") # AVG, CONCAT, HIERARCHICAL
-        self.n_win = hyper_parameters["model"].get("n_win", 3) # n_win=3
         super().__init__(hyper_parameters)
 
 

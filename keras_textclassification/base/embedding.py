@@ -439,25 +439,35 @@ class AlbertEmbedding(BaseEmbedding):
         self.embedding_type = 'albert'
         dict_path = os.path.join(self.corpus_path, 'vocab.txt')
         print('load bert model start!')
-        layer_real  = [i for i in range(25)] + [-i for i in range(25)]
         # 简要判别一下
-        self.layer_indexes = [i if i in layer_real else -2 for i in self.layer_indexes]
+        # self.layer_indexes = [i if i in layer_real else -2 for i in self.layer_indexes]
         self.model = load_brightmart_albert_zh_checkpoint(self.corpus_path,
                                                      training=self.trainable,
                                                      seq_len=self.len_max,
                                                      output_layers = None) # self.layer_indexes)
+        import json
+        config = {}
+        for file_name in os.listdir(self.corpus_path):
+            if file_name.startswith('bert_config.json'):
+                with open(os.path.join(self.corpus_path, file_name)) as reader:
+                    config = json.load(reader)
+                break
+
+        num_hidden_layers = config.get("num_hidden_layers", 0)
+        layer_real  = [i for i in range(num_hidden_layers)] + [-i for i in range(num_hidden_layers)]
+        self.layer_indexes = [i if i in layer_real else -2 for i in self.layer_indexes]
+
         # self.input = self.model.inputs
         # self.output = self.model.outputs[0]
-
         model_l = self.model.layers
         print('load bert model end!')
         # albert model all layers
         layer_dict = [4, 8, 11, 13]
         layer_0 = 13
-        for i in range(20):
+        for i in range(num_hidden_layers):
             layer_0 = layer_0 + 1
             layer_dict.append(layer_0)
-        layer_dict.append(34)
+        # layer_dict.append(34)
         print(layer_dict)
         # 输出它本身
         if len(self.layer_indexes) == 0:

@@ -36,6 +36,8 @@ from keras_textclassification.m11_SelfAttention.graph import SelfAttentionGraph
 from keras_textclassification.m12_HAN.graph import HANGraph
 from keras_textclassification.m13_CapsuleNet.graph import CapsuleNetGraph
 from keras_textclassification.m14_Transformer.graph import TransformerEncodeGraph
+from keras_textclassification.m15_SWEM.graph import SWEMGraph
+from keras_textclassification.m16_LEAM.graph import LEAMGraph
 # 计算时间
 import time
 
@@ -69,7 +71,9 @@ def train(graph='TextCNN', label=17, rate=1.0, hyper_parameters=None, path_train
                  "SELFATTENTION": SelfAttentionGraph,
                  "HAN": HANGraph,
                  "CAPSULE": CapsuleNetGraph,
-                 "TRANSFORMER": TransformerEncodeGraph
+                 "TRANSFORMER": TransformerEncodeGraph,
+                 "SWEM":SWEMGraph,
+                 "LEAM":LEAMGraph
                  }
     graph = graph.upper()
     Graph = str2graph[graph] if graph in str2graph.keys() else str2graph["TEXTCNN"]
@@ -161,3 +165,4 @@ def train(graph='TextCNN', label=17, rate=1.0, hyper_parameters=None, path_train
 
 if __name__ == "__main__":
     train(graph='TextCNN', label=17, rate=1, path_train_data=None, path_dev_data=None,hyper_parameters=None)
+
