@@ -67,6 +67,7 @@ class DCNNGraph(graph):
         """
         super().create_model(hyper_parameters)
         embedding_output = self.word_embedding.output
+        self.filters_num = self.word_embedding.embed_size
         pools = []
         for i in range(len(self.filters)):
 
