@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
 # !/usr/bin/python
-# @time     :2019/6/22 7:35
+# @time     :2019/6/22 19:35
 # @author   :Mo
-# @function :self Attention()
+# @function :Attention of itself
 
 
 from keras.regularizers import L1L2, Regularizer
-from keras.engine.topology import Layer
+# from keras.engine.topology import Layer
+from keras.layers import Layer
 from keras import backend as K
 
 

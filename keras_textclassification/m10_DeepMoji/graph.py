@@ -83,6 +83,9 @@ class DeepMojiGraph(graph):
             x, weights = x
 
         x = Dropout(self.dropout)(x)
+        x = Dense(128, activation="tanh")(x)
+        x = Dropout(self.dropout)(x)
+
         # x = Flatten()(x)
         # 最后就是softmax
         dense_layer = Dense(self.label, activation=self.activate_classify)(x)

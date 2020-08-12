@@ -69,7 +69,7 @@ def train(hyper_parameters=None, rate=1.0):
     print("graph init ok!")
     ra_ed = graph.word_embedding
     # 数据预处理
-    pt = PreprocessText()
+    pt = PreprocessText(path_model_dir)
     x_train, y_train = pt.preprocess_label_ques_to_idx(hyper_parameters['embedding_type'],
                                                        hyper_parameters['data']['train_data'],
                                                        ra_ed, rate=rate, shuffle=True)
@@ -85,13 +85,4 @@ def train(hyper_parameters=None, rate=1.0):
 
 if __name__=="__main__":
     train(rate=1)
-    # 注意: 4G的1050Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
-    # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
-    # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
-    # 开始时候一支部队, learning_rate=0.01才好起来
-
-# rate=0.01,random,char下训练结果, random随机embedding对结果影响很大
-# 11s 737us/step - loss: 1.3494 - acc: 0.6646 - val_loss: 1.9863 - val_acc: 0.5501
-# Epoch 00003: val_loss improved from 2.09217 to 1.98626, saving model to
-# Epoch 4/20
 

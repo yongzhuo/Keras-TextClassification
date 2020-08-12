@@ -15,7 +15,6 @@ from keras import backend as K
 from keras import regularizers
 
 from keras_textclassification.base.graph import graph
-
 import numpy as np
 
 
@@ -52,6 +51,9 @@ class AlbertGraph(graph):
         # x = Concatenate(axis=1)(concat_out)
         # x = Dropout(self.dropout)(x)
         x = Flatten()(x)
+        x = Dropout(self.dropout)(x)
+        x = Dense(128, activation="tanh")(x)
+        x = Dropout(self.dropout)(x)
         # 最后就是softmax
         dense_layer = Dense(self.label, activation=self.activate_classify)(x)
         output_layers = [dense_layer]

@@ -70,7 +70,7 @@ def train(hyper_parameters=None, rate=1.0):
     print("graph init ok!")
     ra_ed = graph.word_embedding
     # 数据预处理
-    pt = PreprocessText()
+    pt = PreprocessText(path_model_dir)
     x_train, y_train = pt.preprocess_label_ques_to_idx(hyper_parameters['embedding_type'],
                                                        hyper_parameters['data']['train_data'],
                                                        ra_ed, rate=rate, shuffle=True)
@@ -79,8 +79,7 @@ def train(hyper_parameters=None, rate=1.0):
                                                    ra_ed, rate=rate, shuffle=True)
     print("data propress ok!")
     print(len(y_train))
-    # 训练
-    graph.fit(x_train, y_train, x_val, y_val)
+    # 训练    graph.fit(x_train, y_train, x_val, y_val)
     print("耗时:" + str(time.time()-time_start))
 
 

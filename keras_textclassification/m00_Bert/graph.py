@@ -51,6 +51,7 @@ class BertGraph(graph):
         #     concat_out.append(x)
         # x = Concatenate(axis=1)(concat_out)
         # x = Dropout(self.dropout)(x)
+
         x = Flatten()(x)
         # 最后就是softmax
         dense_layer = Dense(self.label, activation=self.activate_classify)(x)

@@ -13,9 +13,14 @@ sys.path.append(project_path)
 # 地址
 from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
 # 训练验证数据地址
-from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid
+from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid, \
+                              path_ccks_2020_el_dev, path_ccks_2020_el_tet, path_ccks_2020_el_train,\
+                              path_ccks_2020_el_cls_dev, path_ccks_2020_el_cls_tet, path_ccks_2020_el_cls_train, \
+                              path_root
+
 # 数据预处理, 删除文件目录下文件
-from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, delete_file
+from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, PreprocessSim, delete_file
+
 # 模型图
 from keras_textclassification.m11_SelfAttention.graph import SelfAttentionGraph as Graph
 # 计算时间
@@ -31,18 +36,18 @@ def train(hyper_parameters=None, rate=1.0):
     """
     if not hyper_parameters:
         hyper_parameters = {
-            'len_max': 50,  # 句子最大长度, 固定 推荐20-50
+            'len_max': 1376,  # 句子最大长度, 固定 推荐20-50
             'embed_size': 300,  # 字/词向量维度
             'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
             'trainable': True,  # embedding是静态的还是动态的, 即控制可不可以微调
             'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word'
             'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
-            'gpu_memory_fraction': 0.66,  # gpu使用率
-            'model': {'label': 17,  # 类别数
-                      'batch_size': 64,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
+            'gpu_memory_fraction': 0.76,  # gpu使用率
+            'model': {'label': 23,  # 类别数
+                      'batch_size': 8,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
                       'dropout': 0.5,  # 随机失活, 概率
-                      'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
-                      'decay_rate': 0.9,  # 学习率衰减系数, 乘法
+                      'decay_step': 1000,  # 学习率衰减step, 每N个step衰减一次
+                      'decay_rate': 0.999,  # 学习率衰减系数, 乘法
                       'epochs': 20,  # 训练最大轮次
                       'patience': 3,  # 早停,2-3就好
                       'lr': 1e-3,  # 学习率, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
@@ -58,8 +63,8 @@ def train(hyper_parameters=None, rate=1.0):
             'embedding': {'layer_indexes': [12],  # bert取的层数,
                           # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
                           },
-            'data': {'train_data': path_baidu_qa_2019_train,  # 训练数据
-                     'val_data': path_baidu_qa_2019_valid  # 验证数据
+            'data': {'train_data': path_ccks_2020_el_cls_train,  # 训练数据
+                     'val_data': path_ccks_2020_el_cls_dev  # 验证数据
                      },
         }
 
@@ -71,7 +76,7 @@ def train(hyper_parameters=None, rate=1.0):
     print("graph init ok!")
     ra_ed = graph.word_embedding
     # 数据预处理
-    pt = PreprocessText()
+    pt = PreprocessSim(path_model_dir)
     x_train, y_train = pt.preprocess_label_ques_to_idx(hyper_parameters['embedding_type'],
                                                        hyper_parameters['data']['train_data'],
                                                        ra_ed, rate=rate, shuffle=True)
@@ -86,13 +91,4 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__ == "__main__":
-    train(rate=1)  # sample条件下设为1,否则训练语料可能会很少
-    # 注意: 4G的1050Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
-    # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
-    # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
-    # 参数较多,不适合用bert,会比较慢和OOM
-
-#
-# 1425/1425 [==============================] - 0s 283us/step - loss: 1.0207 - acc: 0.7396 - val_loss: 1.8706 - val_acc: 0.5000
-# Epoch 00012: val_loss improved from 1.89859 to 1.87060, saving model to
-# Epoch 13/20
+    train(rate=1)

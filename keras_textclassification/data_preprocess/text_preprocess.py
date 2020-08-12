@@ -5,16 +5,15 @@
 # @function :data utils of text classification
 
 
-from keras_textclassification.conf.path_config import path_model_dir
-path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
-path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
-
+# from keras_textclassification.conf.path_config import path_model_dir
+# path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
+# path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
 from collections import Counter
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import random
-import jieba
+# import jieba
 import json
 import re
 import os
@@ -199,13 +198,15 @@ class PreprocessText:
     """
         数据预处理, 输入为csv格式, [label,ques]
     """
-    def __init__(self):
+    def __init__(self, path_model_dir):
         self.l2i_i2l = None
-        if os.path.exists(path_fast_text_model_l2i_i2l):
-            self.l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+        self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
+        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
+            self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
     def prereocess_idx(self, pred):
-        if os.path.exists(path_fast_text_model_l2i_i2l):
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_i2l = {}
             i2l = self.l2i_i2l['i2l']
             for i in range(len(pred)):
@@ -216,7 +217,7 @@ class PreprocessText:
             raise RuntimeError("path_fast_text_model_label2index is None")
 
     def prereocess_pred_xid(self, pred):
-        if os.path.exists(path_fast_text_model_l2i_i2l):
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_l2i = {}
             l2i = self.l2i_i2l['l2i']
             for i in range(len(pred)):
@@ -239,7 +240,7 @@ class PreprocessText:
             random.shuffle(indexs)
             ques, label = ques[indexs].tolist(), label[indexs].tolist()
         # 如果label2index存在则不转换了
-        if not os.path.exists(path_fast_text_model_l2i_i2l):
+        if not os.path.exists(self.path_fast_text_model_l2i_i2l):
             label_set = set(label)
             count = 0
             label2index = {}
@@ -252,9 +253,9 @@ class PreprocessText:
             l2i_i2l = {}
             l2i_i2l['l2i'] = label2index
             l2i_i2l['i2l'] = index2label
-            save_json(l2i_i2l, path_fast_text_model_l2i_i2l)
+            save_json(l2i_i2l, self.path_fast_text_model_l2i_i2l)
         else:
-            l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+            l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
         len_ql = int(rate * len(ques))
         if len_ql <= 500: # sample时候不生效,使得语料足够训练
@@ -307,13 +308,15 @@ class PreprocessTextMulti:
     """
         数据预处理, 输入为csv格式, [label,ques]
     """
-    def __init__(self):
+    def __init__(self, path_model_dir):
         self.l2i_i2l = None
-        if os.path.exists(path_fast_text_model_l2i_i2l):
-            self.l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+        self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
+        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
+            self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
     def prereocess_idx(self, pred):
-        if os.path.exists(path_fast_text_model_l2i_i2l):
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_i2l = {}
             i2l = self.l2i_i2l['i2l']
             for i in range(len(pred)):
@@ -324,7 +327,7 @@ class PreprocessTextMulti:
             raise RuntimeError("path_fast_text_model_label2index is None")
 
     def prereocess_pred_xid(self, pred):
-        if os.path.exists(path_fast_text_model_l2i_i2l):
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_l2i = {}
             l2i = self.l2i_i2l['l2i']
             for i in range(len(pred)):
@@ -365,7 +368,7 @@ class PreprocessTextMulti:
             random.shuffle(indexs)
             ques, label = ques[indexs].tolist(), label[indexs].tolist()
 
-        if not os.path.exists(path_fast_text_model_l2i_i2l):
+        if not os.path.exists(self.path_fast_text_model_l2i_i2l):
             from keras_textclassification.conf.path_config import path_byte_multi_news_label
             byte_multi_news_label = txt_read(path_byte_multi_news_label)
             byte_multi_news_label = [i.strip().upper() for i in byte_multi_news_label]
@@ -383,9 +386,9 @@ class PreprocessTextMulti:
             l2i_i2l = {}
             l2i_i2l['l2i'] = label2index
             l2i_i2l['i2l'] = index2label
-            save_json(l2i_i2l, path_fast_text_model_l2i_i2l)
+            save_json(l2i_i2l, self.path_fast_text_model_l2i_i2l)
         else:
-            l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+            l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
             len_label_set = len(l2i_i2l['l2i'])
 
 
@@ -438,13 +441,15 @@ class PreprocessSim:
     """
         数据预处理, 输入为csv格式, [label,ques]
     """
-    def __init__(self):
+    def __init__(self, path_model_dir):
         self.l2i_i2l = None
-        if os.path.exists(path_fast_text_model_l2i_i2l):
-            self.l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+        self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
+        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
+            self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
     def prereocess_idx(self, pred):
-        if os.path.exists(path_fast_text_model_l2i_i2l):
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_i2l = {}
             i2l = self.l2i_i2l['i2l']
             for i in range(len(pred)):
@@ -455,7 +460,7 @@ class PreprocessSim:
             raise RuntimeError("path_fast_text_model_label2index is None")
 
     def prereocess_pred_xid(self, pred):
-        if os.path.exists(path_fast_text_model_l2i_i2l):
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_l2i = {}
             l2i = self.l2i_i2l['l2i']
             for i in range(len(pred)):
@@ -467,23 +472,48 @@ class PreprocessSim:
 
     def preprocess_label_ques_to_idx(self, embedding_type, path, embed,
                                      rate=1, shuffle=True, graph=None):
-        data = pd.read_csv(path)
-        ques_1 = data['sentence1'].tolist()
-        ques_2 = data['sentence2'].tolist()
-        label = data['label'].tolist()
+        if "json" in path:
+            datas = txt_read(path)
+            ques_1 = []
+            ques_2 = []
+            label = []
+            offset = []
+            mention = []
+            for data_str in datas:
+                data = json.loads(data_str)
+                ques_1 += [data['sentence1']]
+                ques_2 += [data['sentence2']]
+                mention += [data['mention']]
+                label += [data['label']]
+                offset += [data['offset']]
+        elif "csv" in path:
+            data = pd.read_csv(path)
+            ques_1 = data['sentence1'].tolist()
+            ques_2 = data['sentence2'].tolist()
+            label = data['label'].tolist()
+            offset = data['offset'].tolist()
+
         ques_1 = [str(q1).upper() for q1 in ques_1]
         ques_2 = [str(q2).upper() for q2 in ques_2]
 
-        label = [str(l).upper() for l in label]
+        # label = [str(l).upper() for l in label]
+        label = [str(l) for l in label]
         if shuffle:
             ques_1 = np.array(ques_1)
             ques_2 = np.array(ques_2)
             label = np.array(label)
+            mention = np.array(mention)
+            offset = np.array(offset)
+
             indexs = [ids for ids in range(len(label))]
             random.shuffle(indexs)
-            ques_1, ques_2, label = ques_1[indexs].tolist(), ques_2[indexs].tolist(), label[indexs].tolist()
+            ques_1 = ques_1[indexs].tolist()
+            ques_2 = ques_2[indexs].tolist()
+            label = label[indexs].tolist()
+            mention = mention[indexs].tolist()
+            offset = offset[indexs].tolist()
         # 如果label2index存在则不转换了
-        if not os.path.exists(path_fast_text_model_l2i_i2l):
+        if not os.path.exists(self.path_fast_text_model_l2i_i2l):
             label_set = set(label)
             count = 0
             label2index = {}
@@ -496,12 +526,12 @@ class PreprocessSim:
             l2i_i2l = {}
             l2i_i2l['l2i'] = label2index
             l2i_i2l['i2l'] = index2label
-            save_json(l2i_i2l, path_fast_text_model_l2i_i2l)
+            save_json(l2i_i2l, self.path_fast_text_model_l2i_i2l)
         else:
-            l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+            l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
         len_ql = int(rate * len(label))
-        if len_ql <= 500: # sample时候不生效,使得语料足够训练
+        if len_ql <= 1: # sample时候不生效,使得语料足够训练
             len_ql = len(label)
 
         x = []
@@ -509,8 +539,78 @@ class PreprocessSim:
         for i in tqdm(range(len_ql)):
             que_1 = ques_1[i]
             que_2 = ques_2[i]
-            que_embed = embed.sentence2idx(text=que_1, second_text=que_2)
-            x.append(que_embed) # [[], ]
+            mention_1 = mention[i]
+            # que_embed = embed.sentence2idx(text=que_1, second_text=que_2)
+            # x.append(que_embed)  # [[], ]
+            offset_i = int(offset[i])
+            # ques_entity = que_1 + "##" + que_1[offset_i+len(que_2):]
+            # ques_entity = que_1
+            # que_embed1 = embed.sentence2idx(text=que_1, second_text=que_2)
+            if embedding_type in ['bert', 'albert']:
+                ########################################1111111##############
+                # [input_id, input_type_id] = que_embed
+                # input_entity_mask = [0] * len(input_id)
+                # input_entity_mask[offset_i:offset_i+len(que_2)] = [1] * len(que_2)
+                # # x.append(que_embed)  # [[], ]
+                # x.append([input_id, input_type_id, input_entity_mask])
+                # # x.append([input_id, input_type_id, input_entity_mask, offset_i])
+                ########################################2222222指针网络######################################
+                # [input_id, input_type_id] = que_embed
+                # input_start_mask = [0] * len(input_id)
+                # input_start_mask[offset_i] = 1
+                # input_end_mask = [0] * len(input_id)
+                # input_end_mask[offset_i + len(mention_1) - 1] = 1
+                # x.append([input_id, input_type_id, input_start_mask, input_start_mask])
+                ########################################分开两个句子###################################################
+                que_embed_1 = embed.sentence2idx(text=que_1)
+                # que_embed_1 = [que[:54] for que in que_embed_1]
+
+                que_embed_2 = embed.sentence2idx(text=que_2)
+                # que_embed_2 = [que[:256-54] for que in que_embed_2]
+                try:
+                    """ques1"""
+                    [input_id_1, input_type_id_1, input_mask_1] = que_embed_1
+                    input_start_mask_1 = [0] * len(input_id_1)
+                    input_start_mask_1[offset_i] = 1
+                    input_end_mask_1 = [0] * len(input_id_1)
+                    input_end_mask_1[offset_i+len(mention_1)-1] = 1
+                    input_entity_mask_1 = [0] * len(input_id_1)
+                    input_entity_mask_1[offset_i:offset_i+len(mention_1)] = [1] * len(mention_1)
+                    """ques2"""
+                    [input_id_2, input_type_id_2, input_mask_2] = que_embed_2
+                    kind_2 = [0] * len(input_type_id_2)
+                    que_2_sp = que_2.split("|")
+                    que_2_sp_sp = que_2_sp[0].split(":")
+                    kind_2_start = len(que_2_sp_sp[0]) - 1
+                    kind_2_end = kind_2_start + len(que_2_sp_sp[1]) - 1
+                    kind_2[kind_2_start:kind_2_end] = [1] * (kind_2_end-kind_2_start)
+                    kind_21 = [0] * len(input_type_id_2)
+                    if "标签" in que_2_sp[1]:
+                        que_21_sp_sp = que_2_sp[1].split(":")
+                        kind_21_start = len(que_2_sp[0]) + len(que_21_sp_sp[0]) - 1
+                        kind_21_end = len(que_2_sp[0]) + len(que_21_sp_sp[0]) + len(que_21_sp_sp[1]) - 1
+                        kind_21[kind_21_start:kind_21_end] = [1] * (kind_21_end - kind_21_start)
+                except Exception as e:
+                    print(str(e))
+                    gg = 0
+
+                x.append([input_id_1, input_type_id_1, input_mask_1, input_start_mask_1, input_end_mask_1, input_entity_mask_1,
+                          input_id_2, input_type_id_2, input_mask_2, kind_2, kind_21])
+
+
+            elif embedding_type == 'xlnet':
+                if embed.trainable:
+                    [token_input, segment_input, memory_length_input, mask_input] = que_embed
+                    input_entity_mask = [0] * len(token_input)
+                    input_entity_mask[offset_i:offset_i + len(que_2)] = [1] * len(que_2)
+                    # x.append(que_embed)  # [[], ]
+                    x.append([token_input, segment_input, memory_length_input, mask_input, input_entity_mask])
+                else:
+                    [token_input, segment_input, memory_length_input] = que_embed
+                    input_entity_mask = [0] * len(token_input)
+                    input_entity_mask[offset_i:offset_i + len(que_2)] = [1] * len(que_2)
+                    x.append([token_input, segment_input, memory_length_input, input_entity_mask])
+
         label_zo = []
         print("label to onehot start!")
         label_len_ql = label[0:len_ql]
@@ -522,20 +622,26 @@ class PreprocessSim:
 
         if embedding_type in  ['bert', 'albert']:
             x_, y_ = np.array(x), np.array(label_zo)
-            x_1 = np.array([x[0] for x in x_])
-            x_2 = np.array([x[1] for x in x_])
-            x_all = [x_1, x_2]
+            # x_1 = np.array([x[0] for x in x_])
+            # x_2 = np.array([x[1] for x in x_])
+            # x_3 = np.array([x[2] for x in x_])
+            # x_4 = np.array([x[3] for x in x_])
+            # x_all = [x_1, x_2, x_3, x_4]
+            x_all = []
+            for i in range(len(x_[0])):
+                x_all.append(np.array([x[i] for x in x_]))
             return x_all, y_
         elif embedding_type == 'xlnet':
             x_, y_ = x, np.array(label_zo)
             x_1 = np.array([x[0][0] for x in x_])
             x_2 = np.array([x[1][0] for x in x_])
             x_3 = np.array([x[2][0] for x in x_])
+            x_4 = np.array([x[3][0] for x in x_])
             if embed.trainable:
-                x_4 = np.array([x[3][0] for x in x_])
-                x_all = [x_1, x_2, x_3, x_4]
+                x_5 = np.array([x[4][0] for x in x_])
+                x_all = [x_1, x_2, x_3, x_4, x_5]
             else:
-                x_all = [x_1, x_2, x_3]
+                x_all = [x_1, x_2, x_3, x_4]
             return x_all, y_
         else:
             x_, y_ = np.array(x), np.array(label_zo)
@@ -546,13 +652,15 @@ class PreprocessSimConv2019:
     """
         数据预处理, 输入为csv格式, [label,ques]
     """
-    def __init__(self):
+    def __init__(self, path_model_dir):
         self.l2i_i2l = None
-        if os.path.exists(path_fast_text_model_l2i_i2l):
-            self.l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+        self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
+        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
+            self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
     def prereocess_idx(self, pred):
-        if os.path.exists(path_fast_text_model_l2i_i2l):
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_i2l = {}
             i2l = self.l2i_i2l['i2l']
             for i in range(len(pred)):
@@ -563,7 +671,7 @@ class PreprocessSimConv2019:
             raise RuntimeError("path_fast_text_model_label2index is None")
 
     def prereocess_pred_xid(self, pred):
-        if os.path.exists(path_fast_text_model_l2i_i2l):
+        if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_l2i = {}
             l2i = self.l2i_i2l['l2i']
             for i in range(len(pred)):
@@ -593,7 +701,7 @@ class PreprocessSimConv2019:
             random.shuffle(indexs)
             ques_1, ques_2, label, category = ques_1[indexs].tolist(), ques_2[indexs].tolist(), label[indexs].tolist(), category[indexs].tolist()
         # 如果label2index存在则不转换了
-        if not os.path.exists(path_fast_text_model_l2i_i2l):
+        if not os.path.exists(self.path_fast_text_model_l2i_i2l):
             label_set = set(label)
             count = 0
             label2index = {}
@@ -606,9 +714,9 @@ class PreprocessSimConv2019:
             l2i_i2l = {}
             l2i_i2l['l2i'] = label2index
             l2i_i2l['i2l'] = index2label
-            save_json(l2i_i2l, path_fast_text_model_l2i_i2l)
+            save_json(l2i_i2l, self.path_fast_text_model_l2i_i2l)
         else:
-            l2i_i2l = load_json(path_fast_text_model_l2i_i2l)
+            l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
         len_ql = int(rate * len(label))
         if len_ql <= 500: # sample时候不生效,使得语料足够训练

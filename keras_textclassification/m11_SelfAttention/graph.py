@@ -8,7 +8,7 @@
 from keras import regularizers
 from keras.layers import Dense
 from keras.layers import Dropout, Flatten
-from keras.layers import SpatialDropout1D, GlobalMaxPooling1D, MaxPooling1D
+from keras.layers import SpatialDropout1D, GlobalMaxPooling1D, GlobalAveragePooling1D, Concatenate
 from keras.models import Model
 
 from keras_textclassification.keras_layers.attention_self import AttentionSelf
@@ -34,9 +34,13 @@ class SelfAttentionGraph(graph):
         x = self.word_embedding.output
         x = SpatialDropout1D(self.dropout_spatial)(x)
         x = AttentionSelf(self.word_embedding.embed_size)(x)
-        x = GlobalMaxPooling1D()(x)
+        x_max = GlobalMaxPooling1D()(x)
+        x_avg = GlobalAveragePooling1D()(x)
+        x = Concatenate()([x_max, x_avg])
         x = Dropout(self.dropout)(x)
         # x = Flatten()(x)
+        x = Dense(72, activation="tanh")(x)
+        x = Dropout(self.dropout)(x)
         # 最后就是softmax
         dense_layer = Dense(self.label, activation=self.activate_classify)(x)
         output = [dense_layer]

@@ -39,7 +39,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
     ques = '我要打王者荣耀'
     # str to token
     ques_embed = ra_ed.sentence2idx(ques)
-    if hyper_parameters['embedding_type'] == 'bert':
+    if hyper_parameters['embedding_type'] in ['bert', 'albert']:
         x_val_1 = np.array([ques_embed[0]])
         x_val_2 = np.array([ques_embed[1]])
         x_val = [x_val_1, x_val_2]
@@ -61,7 +61,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
         ques = input()
         ques_embed = ra_ed.sentence2idx(ques)
         print(ques_embed)
-        if hyper_parameters['embedding_type'] == 'bert':
+        if hyper_parameters['embedding_type'] in ['bert', 'albert']:
             x_val_1 = np.array([ques_embed[0]])
             x_val_2 = np.array([ques_embed[1]])
             x_val = [x_val_1, x_val_2]

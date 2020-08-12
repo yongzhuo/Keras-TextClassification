@@ -9,6 +9,7 @@
 import pathlib
 import sys
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 sys.path.append(project_path)
 # 地址
@@ -34,7 +35,7 @@ def train(hyper_parameters=None, rate=1.0):
         'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
         'gpu_memory_fraction': 0.66, #gpu使用率
         'model': {'label': 17,  # 类别数
-                  'batch_size': 32,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
+                  'batch_size': 16,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
                   'filters': [[10, 7, 5], [6, 4, 3]],  # 3层的时候
                   # 'filters': [[10, 7], [5, 3]],  # 2层的时候
                   # 'filters': [[5, 3], [4, 2]], #2层的时候
@@ -71,7 +72,7 @@ def train(hyper_parameters=None, rate=1.0):
     print("graph init ok!")
     ra_ed = graph.word_embedding
     # 数据预处理
-    pt = PreprocessText()
+    pt = PreprocessText(path_model_dir)
     x_train, y_train = pt.preprocess_label_ques_to_idx(hyper_parameters['embedding_type'],
                                                        hyper_parameters['data']['train_data'],
                                                        ra_ed, rate=rate, shuffle=True)
@@ -87,11 +88,4 @@ def train(hyper_parameters=None, rate=1.0):
 
 if __name__=="__main__":
     train(rate=1)
-    # 注意: 4G的1050Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
-    # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
-    # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
-
-# 14251/14251 [==============================] - 40s 3ms/step - loss: 0.8393 - acc: 0.7466 - val_loss: 1.0829 - val_acc: 0.6637
-# Epoch 00003: val_loss improved from 1.12679 to 1.08295, saving model to
-# Epoch 4/20
 

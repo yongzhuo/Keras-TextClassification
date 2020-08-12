@@ -5,8 +5,8 @@
 # @function :Hierarchical Attention Networks for Document Classification(https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
 
 
-from keras.layers import Dense, Dropout, SpatialDropout1D, Flatten, Input
-from keras.layers import Bidirectional, LSTM, GRU, TimeDistributed
+from keras.layers import Dense, Dropout, Flatten, Input
+from keras.layers import Bidirectional, GRU
 from keras import regularizers
 from keras.models import Model
 import keras.backend as K

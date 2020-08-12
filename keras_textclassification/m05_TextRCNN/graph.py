@@ -80,9 +80,11 @@ class RCNNGraph(graph):
             conv_pools.append(pooled)
         # 拼接
         x = Concatenate()(conv_pools)
+        x = Dropout(self.dropout)(x)
         x = Flatten()(x)
         #########################################################################
-
+        x = Dense(units=128, activation="tanh")(x)
+        x = Dropout(self.dropout)(x)
         output = Dense(units=self.label, activation=self.activate_classify)(x)
         self.model = Model(inputs=self.word_embedding.input, outputs=output)
         self.model.summary(120)

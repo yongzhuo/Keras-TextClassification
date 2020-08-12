@@ -26,6 +26,8 @@ import time
 
 import numpy as np
 
+# path_hyper_parameters=path_model_dir + "hyper_parameters.json"
+
 
 def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.0):
     # 测试集的准确率
@@ -40,7 +42,7 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     print("graph load ok!")
     ra_ed = graph.word_embedding
     # 数据预处理
-    pt = PreprocessText()
+    pt = PreprocessText(path_model_dir)
     y, x = read_and_process(hyper_parameters['data']['val_data'])
     # 取该数据集的百分之几的语料测试
     len_rate = int(len(y) * rate)
@@ -51,7 +53,7 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     for x_one in x:
         count += 1
         ques_embed = ra_ed.sentence2idx(x_one)
-        if hyper_parameters['embedding_type'] == 'bert': # bert数据处理, token
+        if hyper_parameters['embedding_type'] in ['bert', 'albert']: # bert数据处理, token
             x_val_1 = np.array([ques_embed[0]])
             x_val_2 = np.array([ques_embed[1]])
             x_val = [x_val_1, x_val_2]
@@ -81,7 +83,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
     # 输入预测
     # 加载超参数
     hyper_parameters = load_json(path_hyper_parameter)
-    pt = PreprocessText()
+    pt = PreprocessText(path_model_dir)
     # 模式初始化和加载
     graph = Graph(hyper_parameters)
     graph.load_model()
@@ -89,7 +91,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
     ques = '我要打王者荣耀'
     # str to token
     ques_embed = ra_ed.sentence2idx(ques)
-    if hyper_parameters['embedding_type'] == 'bert':
+    if hyper_parameters['embedding_type'] in ['bert', 'albert']:
         x_val_1 = np.array([ques_embed[0]])
         x_val_2 = np.array([ques_embed[1]])
         x_val = [x_val_1, x_val_2]
@@ -105,7 +107,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
         ques = input()
         ques_embed = ra_ed.sentence2idx(ques)
         print(ques_embed)
-        if hyper_parameters['embedding_type'] == 'bert':
+        if hyper_parameters['embedding_type'] in ['bert', 'albert']:
             x_val_1 = np.array([ques_embed[0]])
             x_val_2 = np.array([ques_embed[1]])
             x_val = [x_val_1, x_val_2]

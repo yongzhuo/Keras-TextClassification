@@ -43,7 +43,7 @@ def train(hyper_parameters=None, rate=1.0):
                   'lr': 1e-3,  # 学习率, bert取5e-5, 其他取1e-3, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
                   'l2': 1e-9,  # l2正则化
                   'activate_classify': 'sigmoid', # 'sigmoid',  # 最后一个layer, 即分类激活函数
-                  'loss': 'categorical_crossentropy',  # 损失函数, 可能有问题, 可以自己定义
+                  'loss': 'binary_crossentropy',  # 损失函数, 可能有问题, 可以自己定义
                   'metrics': 'top_k_categorical_accuracy',  # 1070个类, 太多了先用topk,  这里数据k设置为最大:33
                   # 'metrics': 'categorical_accuracy',  # 保存更好模型的评价标准
                   'is_training': True,  # 训练后者是测试模型
@@ -68,7 +68,7 @@ def train(hyper_parameters=None, rate=1.0):
     print("graph init ok!")
     ra_ed = graph.word_embedding
     # 数据预处理
-    pt = PreprocessTextMulti()
+    pt = PreprocessTextMulti(path_model_dir)
     x_train, y_train = pt.preprocess_label_ques_to_idx(hyper_parameters['embedding_type'],
                                                        hyper_parameters['data']['train_data'],
                                                        ra_ed, rate=rate, shuffle=True)

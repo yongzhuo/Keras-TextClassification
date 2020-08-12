@@ -36,7 +36,7 @@ def train(hyper_parameters=None, rate=1.0):
             'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
             'trainable': True,  # embedding是静态的还是动态的
             'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word'
-            'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
+            'embedding_type': 'word2vec',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
             'gpu_memory_fraction': 0.66,  # gpu使用率
             'model': {'label': 17,  # 类别数
                       'batch_size': 64,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
@@ -80,7 +80,7 @@ def train(hyper_parameters=None, rate=1.0):
     print("graph init ok!")
     ra_ed = graph.word_embedding
     # 数据预处理
-    pt = PreprocessText()
+    pt = PreprocessText(path_model_dir)
     x_train, y_train = pt.preprocess_label_ques_to_idx(hyper_parameters['embedding_type'],
                                                        hyper_parameters['data']['train_data'],
                                                        ra_ed, rate=rate, shuffle=True)
@@ -95,10 +95,4 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__ == "__main__":
-    train(rate=1)  # sample条件下设为1,否则训练语料可能会很少
-    # 注意: 4G的1050Ti的GPU、win10下batch_size=32,len_max=20, gpu<=0.87, 应该就可以bert-fineture了。
-    # 全量数据训练一轮(batch_size=32),就能达到80%准确率(验证集), 效果还是不错的
-    # win10下出现过错误,gpu、len_max、batch_size配小一点就好:ailed to allocate 3.56G (3822520832 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
-    # 参数较多,不适合用bert,会比较慢和OOM
-
-# 速度很慢呐，字/词维度(embed_size)一设大就OOM了，不喜欢用
+    train(rate=1)

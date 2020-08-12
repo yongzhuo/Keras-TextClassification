@@ -83,7 +83,9 @@ class BaseEmbedding:
         self.token2idx = {}
         self.idx2token = {}
 
-    def sentence2idx(self, text, second_text=""):
+    def sentence2idx(self, text, second_text=None):
+        if second_text:
+            second_text = "[SEP]" + str(second_text).upper()
         # text = extract_chinese(str(text).upper())
         text = str(text).upper()
 
@@ -296,13 +298,40 @@ class BertEmbedding(BaseEmbedding):
         self.vocab_size = len(self.token_dict)
         self.tokenizer = keras_bert.Tokenizer(self.token_dict)
 
-    def sentence2idx(self, text, second_text=""):
-        # text = extract_chinese(str(text).upper())
+    def build_keras4bert(self):
+        import bert4keras
+        from bert4keras.models import build_transformer_model
+        from bert4keras.tokenizers import Tokenizer,load_vocab
+        import os
+        self.embedding_type = 'bert'
+        config_path = os.path.join(self.corpus_path, 'bert_config.json')
+        checkpoint_path = os.path.join(self.corpus_path, 'bert_model.ckpt')
+        dict_path = os.path.join(self.corpus_path, 'vocab.txt')
+        self.model = bert4keras.models.build_transformer_model(config_path=config_path,
+                                                               checkpoint_path=checkpoint_path)
+
+        # 加载并精简词表，建立分词器
+        self.token_dict, keep_tokens = load_vocab(
+            dict_path=dict_path,
+            simplified=True,
+            startwith=['[PAD]', '[UNK]', '[CLS]', '[SEP]'],
+        )
+        self.vocab_size = len(self.token_dict)
+        self.tokenizer = Tokenizer(self.token_dict, do_lower_case=True)
+
+    def sentence2idx(self, text, second_text=None):
+        text = extract_chinese(str(text).upper())
         text = str(text).upper()
         input_id, input_type_id = self.tokenizer.encode(first=text, second=second_text, max_len=self.len_max)
-        # input_mask = [0 if ids == 0 else 1 for ids in input_id]
-        # return input_id, input_type_id, input_mask
         return [input_id, input_type_id]
+
+        # input_id, input_type_id = self.tokenizer.encode(first_text=text,
+        #                                                 second_text=second_text,
+        #                                                 max_length=self.len_max,
+        #                                                 first_length=self.len_max)
+        #
+        # input_mask = [0 if ids == 0 else 1 for ids in input_id]
+        # return [input_id, input_type_id, input_mask]
 
 
 class XlnetEmbedding(BaseEmbedding):
@@ -408,7 +437,7 @@ class XlnetEmbedding(BaseEmbedding):
         self.embedding_size = self.model.output_shape[-1]
         self.vocab_size = len(self.tokenizer.sp)
 
-    def sentence2idx(self, text, second_text=""):
+    def sentence2idx(self, text, second_text=None):
         # text = extract_chinese(str(text).upper())
         text = str(text).upper()
         tokens = self.tokenizer.encode(text)

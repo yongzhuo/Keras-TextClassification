@@ -141,5 +141,16 @@ train(graph='TextCNN', # 必填, 算法名, 可选"ALBERT","BERT","XLNET","FASTT
      hyper_parameters=None) # 可填, json格式, 超参数, 默认embedding为'char','random'
 ```
 
+# Reference
+For citing this work, you can refer to the present GitHub project. For example, with BibTeX:
+```
+@misc{Keras-TextClassification,
+    howpublished = {\url{https://github.com/yongzhuo/Keras-TextClassification}},
+    title = {Keras-TextClassification},
+    author = {Yongzhuo Mo},
+    publisher = {GitHub},
+    year = {2019}
+}
+```
 
 *希望对你有所帮助!

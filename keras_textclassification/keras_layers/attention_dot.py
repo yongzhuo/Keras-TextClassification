@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 # @time    : 2020/3/31 19:10
 # @author  : Mo
-# @function:
+# @function: Attention of dot
 
 
-from keras.regularizers import L1L2, Regularizer
+from keras.regularizers import L1L2
 # from keras.engine.topology import Layer
 from keras.layers import Layer
 from keras import backend as K

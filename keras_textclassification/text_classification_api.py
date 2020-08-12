@@ -166,3 +166,4 @@ def train(graph='TextCNN', label=17, rate=1.0, hyper_parameters=None, path_train
 if __name__ == "__main__":
     train(graph='TextCNN', label=17, rate=1, path_train_data=None, path_dev_data=None,hyper_parameters=None)
 
+

@@ -6,7 +6,7 @@
 
 
 from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
-from keras_textclassification.data_preprocess.generator_preprocess import PreprocessGenerator
+from keras_textclassification.data_preprocess.generator_preprocess import PreprocessGenerator, PreprocessSimGenerator
 from keras_textclassification.data_preprocess.text_preprocess import save_json
 from keras_textclassification.keras_layers.keras_lookahead import Lookahead
 from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
@@ -57,8 +57,8 @@ class graph:
             # keras, tensorflow控制GPU使用率等
             import tensorflow as tf
             config = tf.ConfigProto()
-            config.gpu_options.per_process_gpu_memory_fraction = self.gpu_memory_fraction
-            # config.gpu_options.allow_growth = True
+            # config.gpu_options.per_process_gpu_memory_fraction = self.gpu_memory_fraction
+            config.gpu_options.allow_growth = True
             sess = tf.Session(config=config)
             K.set_session(sess)
         self.create_model(hyper_parameters)
@@ -101,7 +101,7 @@ class graph:
         cb_em = [ TensorBoard(log_dir=os.path.join(self.path_model_dir, "logs"), batch_size=self.batch_size, update_freq='batch'),
                   EarlyStopping(monitor='val_loss', mode='min', min_delta=1e-8, patience=self.patience),
                   ModelCheckpoint(monitor='val_loss', mode='min', filepath=self.model_path, verbose=1,
-                                  save_best_only=True, save_weights_only=False),]
+                                  save_best_only=True, save_weights_only=True),]
         return cb_em
 
     def create_compile(self):
@@ -109,9 +109,10 @@ class graph:
           构建优化器、损失函数和评价函数
         :return: 
         """
+
         if self.optimizer_name.upper() == "ADAM":
             self.model.compile(optimizer=Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
-                               loss=self.loss,
+                               loss= self.loss,
                                metrics=[self.metrics]) # Any optimize
         elif self.optimizer_name.upper() == "RADAM":
             self.model.compile(optimizer=RAdam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
@@ -119,7 +120,7 @@ class graph:
                                metrics=[self.metrics]) # Any optimize
         else:
             self.model.compile(optimizer=RAdam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
-                               loss=self.loss,
+                               loss= self.loss,
                                metrics=[self.metrics]) # Any optimize
             lookahead = Lookahead(k=5, alpha=0.5)  # Initialize Lookahead
             lookahead.inject(self.model)  # add into model
@@ -139,6 +140,9 @@ class graph:
         self.hyper_parameters['model']['dropout'] = 0.0
 
         save_json(jsons=self.hyper_parameters, json_path=self.path_hyper_parameters)
+        # if self.is_training and os.path.exists(self.model_path):
+        #     print("load_weights")
+        #     self.model.load_weights(self.model_path)
         # 训练模型
         self.model.fit(x_train, y_train, batch_size=self.batch_size,
                        epochs=self.epochs, validation_data=(x_dev, y_dev),
@@ -164,17 +168,19 @@ class graph:
 
         save_json(jsons=self.hyper_parameters, json_path=self.path_hyper_parameters)
 
-        pg = PreprocessGenerator()
+        pg = PreprocessGenerator(self.path_model_dir)
         _, len_train = pg.preprocess_get_label_set(self.hyper_parameters['data']['train_data'])
         data_fit_generator = pg.preprocess_label_ques_to_idx(embedding_type=self.hyper_parameters['embedding_type'],
                                                              batch_size=self.batch_size,
                                                              path=self.hyper_parameters['data']['train_data'],
+                                                             epcoh=self.epochs,
                                                              embed=embed,
                                                              rate=rate)
         _, len_val = pg.preprocess_get_label_set(self.hyper_parameters['data']['val_data'])
         data_dev_generator = pg.preprocess_label_ques_to_idx(embedding_type=self.hyper_parameters['embedding_type'],
                                                              batch_size=self.batch_size,
                                                              path=self.hyper_parameters['data']['val_data'],
+                                                             epcoh=self.epochs,
                                                              embed=embed,
                                                              rate=rate)
         steps_per_epoch = len_train // self.batch_size + 1
@@ -190,6 +196,54 @@ class graph:
         if self.trainable:
             self.word_embedding.model.save(self.path_fineture)
 
+    def fit_generator_sim(self, embed, rate=1):
+        """
+
+        :param data_fit_generator: yield, 训练数据
+        :param data_dev_generator: yield, 验证数据
+        :param steps_per_epoch: int, 训练一轮步数
+        :param validation_steps: int, 验证一轮步数
+        :return: 
+        """
+        # 保存超参数
+        self.hyper_parameters['model']['is_training'] = False  # 预测时候这些设为False
+        self.hyper_parameters['model']['trainable'] = False
+        self.hyper_parameters['model']['dropout'] = 0.0
+
+        save_json(jsons=self.hyper_parameters, json_path=self.path_hyper_parameters)
+
+        pg = PreprocessSimGenerator(self.hyper_parameters['model']['path_model_dir'])
+        _, len_train = pg.preprocess_get_label_set(self.hyper_parameters['data']['train_data'])
+        data_fit_generator = pg.preprocess_label_ques_to_idx(embedding_type=self.hyper_parameters['embedding_type'],
+                                                             batch_size=self.batch_size,
+                                                             path=self.hyper_parameters['data']['train_data'],
+                                                             embed=embed,
+                                                             epcoh=self.epochs,
+                                                             rate=rate)
+        _, len_val = pg.preprocess_get_label_set(self.hyper_parameters['data']['val_data'])
+        data_dev_generator = pg.preprocess_label_ques_to_idx(embedding_type=self.hyper_parameters['embedding_type'],
+                                                             batch_size=self.batch_size,
+                                                             path=self.hyper_parameters['data']['val_data'],
+                                                             embed=embed,
+                                                             epcoh=self.epochs,
+                                                             rate=rate)
+        steps_per_epoch = len_train // self.batch_size + 1
+        validation_steps = len_val // self.batch_size + 1
+        # self.model.load_weights(self.model_path)
+        # 训练模型
+        self.model.fit_generator(generator=data_fit_generator,
+                                 validation_data=data_dev_generator,
+                                 callbacks=self.callback(),
+                                 epochs=self.epochs,
+                                 steps_per_epoch=32,
+                                 validation_steps=6)
+        # 保存embedding, 动态的
+        if self.trainable:
+            self.word_embedding.model.save(self.path_fineture)
+    # 1600000/6=266666
+    # 300000/6=50000
+
+    # 36000/6000
     def load_model(self):
         """
           模型下载
@@ -221,3 +275,5 @@ class graph:
             else:
                 raise RuntimeError("your input sen is wrong, it must be type of list or np.array")
             return self.model.predict(sen)
+
+
