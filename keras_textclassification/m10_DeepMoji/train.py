@@ -16,10 +16,7 @@ sys.path.append(project_path)
 from keras_textclassification.conf.path_config import path_model, path_fineture, \
                                                       path_model_dir, path_hyper_parameters
 # 训练验证数据地址
-from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid, \
-                              path_ccks_2020_el_dev, path_ccks_2020_el_tet, path_ccks_2020_el_train,\
-                              path_ccks_2020_el_cls_dev, path_ccks_2020_el_cls_tet, path_ccks_2020_el_cls_train, \
-                              path_root
+from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid, path_root
 
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, PreprocessSim, delete_file
