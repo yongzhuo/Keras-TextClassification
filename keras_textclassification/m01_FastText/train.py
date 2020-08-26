@@ -92,8 +92,8 @@ def train(hyper_parameters=None, rate=1.0):
                       # 'ngram_ns': [3],
                       # 'corpus_path': path_baidu_qa_2019_train,
                         },
-        'data':{'train_data': path_ccks_2020_el_cls_train, # 训练数据
-                'val_data': path_ccks_2020_el_cls_dev    # 验证数据
+        'data':{'train_data': path_baidu_qa_2019_train, # 训练数据
+                'val_data': path_baidu_qa_2019_valid   # 验证数据
                 },
     }
 
