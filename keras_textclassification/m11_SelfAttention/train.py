@@ -13,10 +13,7 @@ sys.path.append(project_path)
 # 地址
 from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
 # 训练验证数据地址
-from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid, \
-                              path_ccks_2020_el_dev, path_ccks_2020_el_tet, path_ccks_2020_el_train,\
-                              path_ccks_2020_el_cls_dev, path_ccks_2020_el_cls_tet, path_ccks_2020_el_cls_train, \
-                              path_root
+from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid, path_root
 
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessText, PreprocessSim, delete_file
@@ -63,8 +60,8 @@ def train(hyper_parameters=None, rate=1.0):
             'embedding': {'layer_indexes': [12],  # bert取的层数,
                           # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
                           },
-            'data': {'train_data': path_ccks_2020_el_cls_train,  # 训练数据
-                     'val_data': path_ccks_2020_el_cls_dev  # 验证数据
+            'data': {'train_data': path_baidu_qa_2019_train,  # 训练数据
+                     'val_data': path_baidu_qa_2019_valid  # 验证数据
                      },
         }
 
