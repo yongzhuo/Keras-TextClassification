@@ -28,18 +28,18 @@ import time
 
 
 
-# fast_text config
-# 模型目录
-path_model_dir =  path_root + "/data/model/ccks_2020_el_cls_deepmoji/"
-# 语料地址
-path_model = path_model_dir + 'model_fast_text.h5'
-# 超参数保存地址
-path_hyper_parameters =  path_model_dir + 'hyper_parameters.json'
-# embedding微调保存地址
-path_fineture = path_model_dir + "embedding_trainable.h5"
-
-if not os.path.exists(path_model_dir):
-    os.mkdir(path_model_dir)
+# # fast_text config
+# # 模型目录
+# path_model_dir =  path_root + "/data/model/ccks_2020_el_cls_deepmoji/"
+# # 语料地址
+# path_model = path_model_dir + 'model_fast_text.h5'
+# # 超参数保存地址
+# path_hyper_parameters =  path_model_dir + 'hyper_parameters.json'
+# # embedding微调保存地址
+# path_fineture = path_model_dir + "embedding_trainable.h5"
+#
+# if not os.path.exists(path_model_dir):
+#     os.mkdir(path_model_dir)
 
 def train(hyper_parameters=None, rate=1.0):
     """
