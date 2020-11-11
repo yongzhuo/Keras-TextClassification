@@ -57,12 +57,12 @@ def train(hyper_parameters=None, rate=1.0):
             'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word'
             'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
             'gpu_memory_fraction': 0.8,  # gpu使用率
-            'model': {'label': 23,  # 类别数
+            'model': {'label': 17,  # 类别数
                       'batch_size': 16,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
                       'dropout': 0.5,  # 随机失活, 概率
                       'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                       'decay_rate': 0.999,  # 学习率衰减系数, 乘法
-                      'epochs': 20,  # 训练最大轮次
+                      'epochs': 1,  # 训练最大轮次
                       'patience': 6,  # 早停,2-3就好
                       'lr': 1e-3,  # 学习率, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
                       'l2': 1e-6,  # l2正则化
@@ -84,15 +84,15 @@ def train(hyper_parameters=None, rate=1.0):
                      },
         }
 
-    # 删除先前存在的模型\embedding微调模型等
-    # delete_file(path_model_dir)
+    # warning, 注意, 会删除先前存在的模型\embedding微调模型等
+    delete_file(path_model_dir)
     time_start = time.time()
     # graph初始化
     graph = Graph(hyper_parameters)
     print("graph init ok!")
     ra_ed = graph.word_embedding
     # 数据预处理
-    pt = PreprocessSim(path_model_dir)
+    pt = PreprocessText(path_model_dir)
     x_train, y_train = pt.preprocess_label_ques_to_idx(hyper_parameters['embedding_type'],
                                                        hyper_parameters['data']['train_data'],
                                                        ra_ed, rate=rate, shuffle=True)

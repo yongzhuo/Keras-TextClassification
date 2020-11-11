@@ -14,6 +14,7 @@ project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 sys.path.append(project_path)
 # 地址
 from keras_textclassification.conf.path_config import path_hyper_parameters
+from keras_textclassification.conf.path_config import path_model_dir
 # 训练验证数据地址
 from keras_textclassification.conf.path_config import path_sim_webank_test
 # 数据预处理, 删除文件目录下文件
@@ -48,7 +49,7 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     print("graph load ok!")
     ra_ed = graph.word_embedding
     # 数据预处理
-    pt = PreprocessSim()
+    pt = PreprocessSim(path_model_dir)
 
     data = pd.read_csv(hyper_parameters['data']['test_data'])
     sentence_1 = data["sentence1"].values.tolist()
@@ -68,7 +69,8 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     for i in range(len_rate):
         count += 1
         ques_embed = ra_ed.sentence2idx(text=sentence_1[i], second_text=sentence_2[i])
-        if hyper_parameters['embedding_type'] in ['bert' or 'albert']:  # bert数据处理, token
+        # print(hyper_parameters['embedding_type'])
+        if hyper_parameters['embedding_type'] in ['bert', 'albert']:  # bert数据处理, token
             x_val_1 = np.array([ques_embed[0]])
             x_val_2 = np.array([ques_embed[1]])
             x_val = [x_val_1, x_val_2]
@@ -100,7 +102,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
     """
     # 加载超参数
     hyper_parameters = load_json(path_hyper_parameter)
-    pt = PreprocessSim()
+    pt = PreprocessSim(path_model_dir)
     # 模式初始化和加载
     graph = Graph(hyper_parameters)
     graph.load_model()
