@@ -205,12 +205,12 @@ class PreprocessText:
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
-    def prereocess_idx(self, pred):
+    def prereocess_idx(self, pred, digits=5):
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_i2l = {}
             i2l = self.l2i_i2l['i2l']
             for i in range(len(pred)):
-                pred_i2l[i2l[str(i)]] = pred[i]
+                pred_i2l[i2l[str(i)]] = round(float(pred[i]), digits)
             pred_i2l_rank = [sorted(pred_i2l.items(), key=lambda k: k[1], reverse=True)]
             return pred_i2l_rank
         else:
@@ -315,12 +315,12 @@ class PreprocessTextMulti:
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
-    def prereocess_idx(self, pred):
+    def prereocess_idx(self, pred, digits=5):
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_i2l = {}
             i2l = self.l2i_i2l['i2l']
             for i in range(len(pred)):
-                pred_i2l[i2l[str(i)]] = pred[i]
+                pred_i2l[i2l[str(i)]] = round(float(pred[i]), digits)
             pred_i2l_rank = [sorted(pred_i2l.items(), key=lambda k: k[1], reverse=True)]
             return pred_i2l_rank
         else:
@@ -448,12 +448,12 @@ class PreprocessSim:
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
-    def prereocess_idx(self, pred):
+    def prereocess_idx(self, pred, digits=5):
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             pred_i2l = {}
             i2l = self.l2i_i2l['i2l']
             for i in range(len(pred)):
-                pred_i2l[i2l[str(i)]] = pred[i]
+                pred_i2l[i2l[str(i)]] = round(float(pred[i]), digits)
             pred_i2l_rank = [sorted(pred_i2l.items(), key=lambda k: k[1], reverse=True)]
             return pred_i2l_rank
         else:
