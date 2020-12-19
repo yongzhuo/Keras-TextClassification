@@ -7,10 +7,7 @@
 
 from keras_textclassification.data_preprocess.text_preprocess import load_json, save_json, txt_read
 from keras_textclassification.conf.path_config import path_model_dir
-from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid, \
-                              path_ccks_2020_el_kg_dev, path_ccks_2020_el_kg_tet, path_ccks_2020_el_kg_train,\
-                              path_ccks_2020_el_cls_dev, path_ccks_2020_el_cls_tet, path_ccks_2020_el_cls_train, \
-                              path_root
+from keras_textclassification.conf.path_config import path_baidu_qa_2019_train, path_baidu_qa_2019_valid, path_root
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
