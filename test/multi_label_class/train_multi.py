@@ -21,7 +21,7 @@ from keras_textclassification.data_preprocess.text_preprocess import PreprocessT
 from keras_textclassification.m02_TextCNN.graph import TextCNNGraph as Graph
 # 计算时间
 import time
-
+# from keras.metrics import top_k_categorical_accuracy
 
 def train(hyper_parameters=None, rate=1.0):
     if not hyper_parameters:
@@ -59,6 +59,7 @@ def train(hyper_parameters=None, rate=1.0):
                 'val_data': path_byte_multi_news_valid,    # 验证数据
                 },
     }
+
 
     # 删除先前存在的模型和embedding微调模型等
     delete_file(path_model_dir)

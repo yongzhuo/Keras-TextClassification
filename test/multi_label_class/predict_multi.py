@@ -31,7 +31,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
     # 输入预测
     # 加载超参数
     hyper_parameters = load_json(path_hyper_parameter)
-    pt = PreprocessTextMulti()
+    pt = PreprocessTextMulti(path_model_dir)
     # 模式初始化和加载
     graph = Graph(hyper_parameters)
     graph.load_model()

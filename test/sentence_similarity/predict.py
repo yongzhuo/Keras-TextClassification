@@ -134,6 +134,7 @@ def pred_input(path_hyper_parameter=path_hyper_parameters):
                 x_val_2 = np.array([ques_embed[1]])
                 x_val = [x_val_1, x_val_2]
                 pred = graph.predict(x_val)
+                print(pred)
                 pre = pt.prereocess_idx(pred[0])
                 print(pre)
             else:

@@ -50,7 +50,6 @@ pre = pt.prereocess_idx(pred[0])
 def predict():
     ques = request.args.get("text", "")
     ques_embed = ra_ed.sentence2idx(ques)
-    print(ques_embed)
     if hyper_parameters['embedding_type'] in ['bert', 'albert']:
         x_val_1 = np.array([ques_embed[0]])
         x_val_2 = np.array([ques_embed[1]])
