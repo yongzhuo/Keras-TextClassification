@@ -79,7 +79,7 @@ step3: goto # Train&Usage(调用) and Predict&Usage(调用)
                                   keras-bert还可以加载百度版ernie(需转换，[https://github.com/ArthurRizar/tensorflow_ernie](https://github.com/ArthurRizar/tensorflow_ernie)),
                                   哈工大版bert-wwm(tf框架，[https://github.com/ymcui/Chinese-BERT-wwm](https://github.com/ymcui/Chinese-BERT-wwm))
        - albert_base_zh/(brightmart训练的albert, 地址为https://github.com/brightmart/albert_zh)
-       - chinese_xlnet_mid_L-24_H-768_A-12/(哈工大预训练的中文xlnet模型[https://github.com/ymcui/Chinese-PreTrained-XLNet],24层)
+       - chinese_xlnet_base_L-12_H-768_A-12/(哈工大预训练的中文xlnet模型[https://github.com/ymcui/Chinese-PreTrained-XLNet],12层)
        - term_char.txt(已经上传, 项目中已全, wiki字典, 还可以用新华字典什么的)
        - term_word.txt(未上传, 项目中只有部分, 可参考词向量的)
        - w2v_model_merge_short.vec(未上传, 项目中只有部分, 词向量, 可以用自己的)
