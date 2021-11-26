@@ -121,7 +121,7 @@ class RandomEmbedding(BaseEmbedding):
     def deal_corpus(self):
         token2idx = self.ot_dict.copy()
         count = 3
-        if 'term' in self.corpus_path:
+        if 'term' in self.corpus_path and self.embedding_type != 'random':
             with open(file=self.corpus_path, mode='r', encoding='utf-8') as fd:
                 while True:
                     term_one = fd.readline()
@@ -351,6 +351,7 @@ class XlnetEmbedding(BaseEmbedding):
     def build(self):
         from keras_xlnet import load_trained_model_from_checkpoint, set_custom_objects
         from keras_xlnet import Tokenizer, ATTENTION_TYPE_BI, ATTENTION_TYPE_UNI
+        # from keras_bert.layers import Extract
 
         self.embedding_type = 'xlnet'
         self.checkpoint_path = os.path.join(self.corpus_path, 'xlnet_model.ckpt')
@@ -360,7 +361,7 @@ class XlnetEmbedding(BaseEmbedding):
         self.attention_type = self.xlnet_embed.get('attention_type', 'bi')  # or 'uni'
         self.attention_type = ATTENTION_TYPE_BI if self.attention_type == 'bi' else ATTENTION_TYPE_UNI
         self.memory_len = self.xlnet_embed.get('memory_len', 0)
-        self.target_len = self.xlnet_embed.get('target_len', 5)
+        self.target_len = self.xlnet_embed.get('target_len', 50)
         print('load xlnet model start!')
         # 模型加载
         model = load_trained_model_from_checkpoint(checkpoint_path=self.checkpoint_path,
