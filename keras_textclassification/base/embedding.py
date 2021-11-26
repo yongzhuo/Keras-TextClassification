@@ -35,8 +35,11 @@ class BaseEmbedding:
 
         # 自适应, 根据level_type和embedding_type判断corpus_path
         if self.level_type == "word":
+            # 'data': {'train_data': path_tnews_train,  # 训练数据
+            #          'val_data': path_tnews_valid  # 验证数据
             if self.embedding_type == "random":
-                self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_random_word)
+                self.corpus_path = hyper_parameters['data'].get('train_data', path_embedding_random_word)
+            # self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_random_word)
             elif self.embedding_type == "word2vec":
                 self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_vector_word2vec_word)
             elif self.embedding_type == "bert":
@@ -49,7 +52,8 @@ class BaseEmbedding:
                 raise RuntimeError("embedding_type must be 'random', 'word2vec' or 'bert'")
         elif self.level_type == "char":
             if self.embedding_type == "random":
-                self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_random_char)
+                self.corpus_path = hyper_parameters['data'].get('train_data', path_embedding_random_char)
+                # self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_random_char)
             elif self.embedding_type == "word2vec":
                 self.corpus_path = hyper_parameters['embedding'].get('corpus_path', path_embedding_vector_word2vec_char)
             elif self.embedding_type == "bert":
@@ -121,7 +125,7 @@ class RandomEmbedding(BaseEmbedding):
     def deal_corpus(self):
         token2idx = self.ot_dict.copy()
         count = 3
-        if 'term' in self.corpus_path and self.embedding_type != 'random':
+        if 'term' in self.corpus_path and self.embedding_type.upper() != 'RANDOM':
             with open(file=self.corpus_path, mode='r', encoding='utf-8') as fd:
                 while True:
                     term_one = fd.readline()
