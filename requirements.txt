@@ -7,6 +7,6 @@ tflearn==0.3.2
 tqdm==4.31.1
 passlib==1.7.1
 keras==2.2.4
-keras-bert==0.80.0
+keras-bert==0.41.0
 keras-xlnet==0.16.0
 keras-adaptive-softmax==0.6.0
