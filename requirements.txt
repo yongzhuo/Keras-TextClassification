@@ -1,6 +1,6 @@
 gensim==3.7.1
 jieba==0.39
-numpy==1.16.2
+numpy==1.21.0
 pandas==0.23.4
 scikit-learn==0.19.1
 tflearn==0.3.2
