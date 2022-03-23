@@ -10,11 +10,12 @@ from keras_adaptive_softmax import AdaptiveEmbedding, AdaptiveSoftmax
 from keras_bert import get_custom_objects as get_bert_custom_objects
 from keras_position_wise_feed_forward import FeedForward
 from keras_layer_normalization import LayerNormalization
-from keras_bert.activations.gelu_fallback import gelu
+# from keras_bert.activations.gelu_fallback import gelu
 from keras_multi_head import MultiHeadAttention
 from keras_bert.layers import Masked, Extract
 from keras_pos_embd import PositionEmbedding
-from keras_bert.backend import keras
+# from keras_bert.backend import keras
+import keras
 import tensorflow as tf
 import numpy as np
 import json
@@ -32,6 +33,14 @@ def get_custom_objects():
     custom_objects['AdaptiveEmbedding'] = AdaptiveEmbedding
     custom_objects['AdaptiveSoftmax'] = AdaptiveSoftmax
     return custom_objects
+
+
+def gelu(x):
+    """An approximation of gelu.
+
+    See: https://arxiv.org/pdf/1606.08415.pdf
+    """
+    return 0.5 * x * (1.0 + keras.backend.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * keras.backend.pow(x, 3))))
 
 
 def build_albert(token_num,
