@@ -5,7 +5,7 @@
 # @function :
 
 from __future__ import print_function, division
-from keras.engine import Layer
+from keras.layers import Layer
 
 
 class NonMaskingLayer(Layer):
