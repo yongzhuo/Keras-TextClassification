@@ -12,9 +12,9 @@ from keras_textclassification.data_preprocess.text_preprocess import extract_chi
 from keras_textclassification.data_preprocess.text_preprocess import get_ngram
 
 from keras_textclassification.keras_layers.non_mask_layer import NonMaskingLayer
-from keras.layers import Add, Embedding, Lambda
+from keras.layers import Add, Embedding, Lambda, Input
 from gensim.models import KeyedVectors
-from keras.models import Input, Model
+from keras.models import Model
 import keras.backend as K
 
 import numpy as np
@@ -22,6 +22,14 @@ import codecs
 import jieba
 import json
 import os
+
+
+__all__ = ["RandomEmbedding",
+           "WordEmbedding",
+           "BertEmbedding",
+           "XlnetEmbedding",
+           "AlbertEmbedding"
+           ]
 
 
 class BaseEmbedding:
