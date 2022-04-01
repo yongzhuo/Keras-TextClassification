@@ -14,6 +14,7 @@
 import pathlib
 import sys
 import os
+os.environ["TF_KERAS"] = "1"
 project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 sys.path.append(project_path)
 # 地址
