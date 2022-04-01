@@ -10,7 +10,7 @@ from keras_textclassification.data_preprocess.generator_preprocess import Prepro
 from keras_textclassification.data_preprocess.text_preprocess import save_json
 from keras_textclassification.keras_layers.keras_lookahead import Lookahead
 from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
-from keras_textclassification.keras_layers.keras_radam import RAdam
+# from keras_textclassification.keras_layers.keras_radam import RAdam
 from keras.optimizers import Adam
 from keras import backend as K
 
@@ -114,12 +114,13 @@ class graph:
             self.model.compile(optimizer=Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
                                loss= self.loss,
                                metrics=[self.metrics]) # Any optimize
-        elif self.optimizer_name.upper() == "RADAM":
+        elif self.optimizer_name.upper() == "RADAM":  # 只有keras可用, 或者是tensorflow版本一致
+            from keras_textclassification.keras_layers.keras_radam import RAdam
             self.model.compile(optimizer=RAdam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
                                loss=self.loss,
                                metrics=[self.metrics]) # Any optimize
         else:
-            self.model.compile(optimizer=RAdam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
+            self.model.compile(optimizer=Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
                                loss= self.loss,
                                metrics=[self.metrics]) # Any optimize
             lookahead = Lookahead(k=5, alpha=0.5)  # Initialize Lookahead
