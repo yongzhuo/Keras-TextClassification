@@ -11,7 +11,7 @@ import keras
 import numpy as np
 from keras import backend as K
 from keras import regularizers
-from keras.engine import Layer
+from keras.layers import Layer
 from keras.initializers import Constant
 from keras.layers import Bidirectional, GRU
 # char cnn
