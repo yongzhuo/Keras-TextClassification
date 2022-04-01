@@ -8,7 +8,7 @@
 from keras.layers import SpatialDropout1D, Activation, concatenate
 from keras.layers import Dropout, Dense, Flatten
 from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional
-from keras.engine import InputSpec, Layer
+from keras.layers import InputSpec, Layer
 from keras.models import Model
 from keras import backend as K
 from keras import initializers
