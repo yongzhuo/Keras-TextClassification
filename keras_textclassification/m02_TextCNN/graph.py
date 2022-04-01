@@ -160,7 +160,7 @@ class TextCNNGraph(graph):
           构建优化器、损失函数和评价函数
         :return:
         """
-        from keras_textclassification.keras_layers.keras_radam import RAdam
+        # from keras_textclassification.keras_layers.keras_radam import RAdam
         from keras.optimizers import Adam
         # self.model.compile(optimizer=Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, decay=0.0),
         #                    loss=[self.focal_loss(alpha=.25, gamma=2)],
